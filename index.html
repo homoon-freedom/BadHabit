@@ -51,15 +51,23 @@
                 일일 점검 리스트
             </h3>
             
-            <div class="space-y-4">
+            <div class="space-y-2">
                 <!-- Law 1 -->
-                <label class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition cursor-pointer border border-transparent hover:border-slate-200">
-                    <input type="checkbox" class="habit-checkbox mt-1 w-5 h-5 rounded border-slate-300">
-                    <div>
-                        <p class="font-bold text-slate-700">보이지 않게 만들기</p>
-                        <p class="text-xs text-slate-500 mt-1">담배, 라이터 등 흡연 유발 환경을 모두 제거했는가?</p>
+                <div class="p-3 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-200">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" class="habit-checkbox mt-1 w-5 h-5 rounded border-slate-300">
+                        <div class="flex-1">
+                            <p class="font-bold text-slate-700">보이지 않게 만들기</p>
+                            <p class="text-xs text-slate-500 mt-1">담배, 라이터 등 흡연 유발 환경을 모두 제거했는가?</p>
+                        </div>
+                    </label>
+                    <div class="mt-3 ml-8">
+                        <button onclick="openTriggerModal()" class="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-200 transition flex items-center gap-1 shadow-sm">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            흡연 유발 상황 기록
+                        </button>
                     </div>
-                </label>
+                </div>
 
                 <!-- Law 2 -->
                 <div class="p-3 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-200">
@@ -111,13 +119,13 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="p-6 pt-0 space-y-3">
-            <button id="checkin-btn" disabled class="w-full py-4 rounded-xl font-bold text-white bg-slate-300 cursor-not-allowed transition duration-300 shadow-sm">
-                항목을 모두 체크해주세요
+        <div class="p-6 pt-0 flex gap-2">
+            <button id="checkin-btn" disabled class="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-slate-300 cursor-not-allowed transition duration-300 shadow-sm">
+                모두 체크
             </button>
             
-            <button id="reset-btn" class="w-full py-3 rounded-xl font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition duration-300">
-                흡연했습니다 (기록 리셋)
+            <button id="reset-btn" class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition duration-300 shrink-0">
+                흡연(리셋)
             </button>
         </div>
 
@@ -194,6 +202,26 @@
         </div>
     </div>
 
+    <!-- Trigger (Law 1) Modal -->
+    <div id="trigger-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform transition-transform duration-300 flex flex-col max-h-[80vh]">
+            <h3 class="text-lg font-bold mb-1 text-slate-800">흡연 유발 상황 (트리거)</h3>
+            <p class="text-xs text-slate-500 mb-4">담배 생각이 나는 상황을 적고, 해당 상황을 잘 피했거나 이겨냈다면 체크하세요.</p>
+            <div class="flex gap-2 mb-4">
+                <input type="text" id="trigger-input" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800" placeholder="예: 식사 직후, 스트레스 받을 때">
+                <button onclick="addTrigger()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-700">추가</button>
+            </div>
+            <div class="flex-1 overflow-y-auto mb-6">
+                <ul id="trigger-list" class="space-y-2 text-sm text-slate-700">
+                    <!-- Items go here -->
+                </ul>
+            </div>
+            <button onclick="closeModal('trigger-modal')" class="w-full py-3 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition mt-auto">
+                확인 및 닫기
+            </button>
+        </div>
+    </div>
+
     <script>
         // State variables
         let streak = 0;
@@ -216,6 +244,14 @@
             pros: [], 
             cons: ['돈이 낭비된다', '건강이 악화된다', '냄새가 난다'] 
         };
+        
+        // 흡연 유발 상황 데이터 (초기값)
+        const triggerData = [
+            { text: '스트레스 받을 때', checked: false },
+            { text: '식사 직후', checked: false },
+            { text: '술 마실 때', checked: false }
+        ];
+
         // 마찰력 및 대체 행동 데이터 (초기값)
         const frictionData = [
             { text: '담배 피고 싶을 때 심호흡 10번 하기', checked: false },
@@ -319,6 +355,83 @@
         function deletePC(index) {
             pcData[currentPCType].splice(index, 1);
             renderPCList();
+        }
+
+        // 흡연 유발 상황(트리거) 모달 기능
+        function openTriggerModal() {
+            const modal = document.getElementById('trigger-modal');
+            renderTriggerList();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function renderTriggerList() {
+            const list = document.getElementById('trigger-list');
+            list.innerHTML = '';
+            triggerData.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = `flex items-center gap-2 p-2 rounded-lg border transition ${item.checked ? 'bg-slate-50 border-slate-100' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`;
+                li.innerHTML = `
+                    <div class="flex flex-col items-center justify-center shrink-0">
+                        <button onclick="moveTrigger(${index}, -1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === 0 ? 'disabled' : ''}>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                        </button>
+                        <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleTrigger(${index})" class="my-0.5 w-5 h-5 rounded border-slate-300 accent-slate-800 cursor-pointer">
+                        <button onclick="moveTrigger(${index}, 1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === triggerData.length - 1 ? 'disabled' : ''}>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                    </div>
+                    <span class="flex-1 cursor-pointer hover:bg-slate-100 px-1 py-1 rounded transition break-all ${item.checked ? 'line-through text-slate-400' : 'text-slate-700'}" onclick="editTrigger(${index})" id="trigger-text-${index}" title="클릭하여 수정">${item.text}</span>
+                    <button onclick="deleteTrigger(${index})" class="p-2 text-slate-300 hover:text-red-500 transition shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function moveTrigger(index, direction) {
+            if (index + direction < 0 || index + direction >= triggerData.length) return;
+            const temp = triggerData[index];
+            triggerData[index] = triggerData[index + direction];
+            triggerData[index + direction] = temp;
+            renderTriggerList();
+        }
+
+        function editTrigger(index) {
+            const span = document.getElementById(`trigger-text-${index}`);
+            const currentText = triggerData[index].text;
+            span.outerHTML = `<input type="text" id="trigger-edit-${index}" value="${currentText}" class="flex-1 border border-slate-400 rounded px-2 py-1 text-base focus:outline-none focus:ring-1 focus:ring-slate-400" onblur="saveTrigger(${index})" onkeydown="if(event.key === 'Enter') saveTrigger(${index})">`;
+            document.getElementById(`trigger-edit-${index}`).focus();
+        }
+
+        function saveTrigger(index) {
+            const input = document.getElementById(`trigger-edit-${index}`);
+            if(input) {
+                const val = input.value.trim();
+                if(val) triggerData[index].text = val;
+                renderTriggerList();
+            }
+        }
+
+        function addTrigger() {
+            const input = document.getElementById('trigger-input');
+            const val = input.value.trim();
+            if(val) {
+                triggerData.push({ text: val, checked: false });
+                input.value = '';
+                renderTriggerList();
+            }
+        }
+
+        function toggleTrigger(index) {
+            triggerData[index].checked = !triggerData[index].checked;
+            renderTriggerList();
+        }
+
+        function deleteTrigger(index) {
+            triggerData.splice(index, 1);
+            renderTriggerList();
         }
 
         // 불편한 상황 모달 열기
@@ -520,12 +633,12 @@
                 checkinBtn.disabled = false;
                 checkinBtn.classList.remove('bg-slate-300', 'cursor-not-allowed');
                 checkinBtn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'hover:shadow-lg', 'transform', 'hover:-translate-y-0.5');
-                checkinBtn.innerText = "오늘의 금연 완료!";
+                checkinBtn.innerText = "금연 완료!";
             } else {
                 checkinBtn.disabled = true;
                 checkinBtn.classList.add('bg-slate-300', 'cursor-not-allowed');
                 checkinBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'hover:shadow-lg', 'transform', 'hover:-translate-y-0.5');
-                checkinBtn.innerText = "항목을 모두 체크해주세요";
+                checkinBtn.innerText = "모두 체크";
             }
         }
 
@@ -549,7 +662,7 @@
             checkinBtn.disabled = true;
             checkinBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'hover:shadow-lg', 'transform', 'hover:-translate-y-0.5');
             checkinBtn.classList.add('bg-green-500', 'cursor-default');
-            checkinBtn.innerText = "오늘 점검 완료 👏 (내일 다시 갱신됩니다)";
+            checkinBtn.innerText = "점검 완료 👏";
             
             // Disable checkboxes to prevent changing them after check-in
             checkboxes.forEach(cb => cb.disabled = true);
