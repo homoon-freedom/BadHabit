@@ -2,793 +2,576 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <!-- 화면 강제 확대 방지를 위해 maximum-scale=1.0, user-scalable=no 추가 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>금연 습관 트래커</title>
+    <title>아토믹 해빗 금연 트래커</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 커스텀 체크박스 스타일링 */
-        input[type="checkbox"] {
-            accent-color: #3b82f6; 
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;700;900&display=swap');
+        body { font-family: 'Pretendard', sans-serif; background-color: #f3f4f6; }
+        /* 스크롤바 숨기기 (모바일 환경 깔끔하게) */
+        ::-webkit-scrollbar { display: none; }
         
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* 스크롤바 숨기기 (선택사항) */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
+        /* 모달 애니메이션 */
+        .modal-enter { opacity: 0; transform: scale(0.95); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 0.2s, transform 0.2s; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4 font-sans text-slate-800">
+<body class="text-gray-800 antialiased h-screen flex flex-col max-w-md mx-auto bg-white shadow-xl relative overflow-hidden">
 
-    <div class="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden fade-in">
+    <!-- 상단 헤더 & 연속 달성일 -->
+    <div class="bg-blue-600 px-4 py-3 text-center">
+        <h1 class="text-white text-xs opacity-80 mb-0.5">아토믹 해빗 금연 트래커</h1>
+        <p class="text-white text-lg font-black tracking-tight">"나는 비흡연자다"</p>
+        <p class="text-blue-200 text-[10px] mt-0.5">정체성의 변화가 행동의 변화를 만듭니다.</p>
+    </div>
+
+    <div class="bg-white rounded-b-3xl shadow-sm pt-4 px-6 pb-1 text-center relative z-10">
+        <h2 class="text-sm font-medium text-gray-500 mb-1">현재 연속 금연일</h2>
+        <div class="flex items-center justify-center space-x-2">
+            <span id="streakCount" class="text-4xl font-black text-blue-800">0</span>
+            <span class="text-lg font-bold text-gray-700">일째</span>
+        </div>
         
-        <!-- Header & Identity -->
-        <div class="bg-blue-600 text-white py-4 px-6 text-center">
-            <h1 class="text-xs font-semibold tracking-wider text-blue-200 mb-1">아토믹 해빗 금연 트래커</h1>
-            <h2 class="text-2xl font-extrabold mb-1">"나는 비흡연자다"</h2>
-            <p class="text-blue-100 text-xs">정체성의 변화가 행동의 변화를 만듭니다.</p>
+        <!-- 오늘 흡연 모니터링 영역 -->
+        <div class="mt-2 mb-1">
+            <div class="text-xs text-gray-600">오늘 흡연: <span id="todaySmokeCount" class="text-sm font-bold text-red-500">0</span>회</div>
+            <div id="todaySmokeTimes" class="text-[10px] text-gray-400 mt-0.5 h-3"></div>
         </div>
 
-        <!-- Streak Counter -->
-        <div class="pt-6 px-6 pb-1 text-center border-b border-slate-100">
-            <p class="text-slate-500 font-medium mb-1">현재 연속 금연일</p>
-            <div class="flex items-center justify-center gap-2">
-                <span id="streak-count" class="text-5xl font-black text-blue-600">0</span>
-                <span class="text-2xl font-bold text-slate-700">일째</span>
-            </div>
-            <div id="success-message" class="hidden mt-3 text-sm font-bold text-green-500 bg-green-50 py-2 rounded-lg">
-                🎉 오늘의 금연 목표를 달성하셨습니다!
-            </div>
-        </div>
+        <div class="w-12 h-1 bg-blue-100 mx-auto mt-2 rounded-full"></div>
+    </div>
 
-        <!-- 4 Laws Checklist -->
-        <div class="px-6 py-3">
-            <h3 class="text-lg font-bold mb-3 flex items-center gap-2">
-                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                일일 점검 리스트
-            </h3>
+    <!-- 4법칙 실천 체크리스트 -->
+    <div class="flex-1 overflow-y-auto px-5 py-4">
+        <h3 class="font-bold text-gray-800 mb-3 text-sm">일일 점검 리스트</h3>
+        <div class="space-y-2">
             
-            <div class="space-y-1">
-                <!-- Law 1 -->
-                <div class="p-2 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-200">
-                    <label class="flex items-start gap-3 cursor-pointer">
-                        <input type="checkbox" class="habit-checkbox mt-1 w-5 h-5 rounded border-slate-300">
-                        <div class="flex-1">
-                            <p class="font-bold text-slate-700">보이지 않게 만들기</p>
-                            <p class="text-xs text-slate-500 mt-1">담배, 라이터 등 흡연 유발 환경을 모두 제거했는가?</p>
-                        </div>
-                    </label>
-                    <div class="mt-3 ml-8">
-                        <button onclick="openTriggerModal()" class="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-200 transition flex items-center gap-1 shadow-sm">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                            흡연 유발 상황 기록
-                        </button>
+            <!-- 1법칙 -->
+            <label class="flex items-start p-3 bg-gray-50 rounded-xl border border-gray-100 cursor-pointer active:bg-gray-100">
+                <input type="checkbox" class="daily-check mt-1 w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                <div class="ml-3 flex-1">
+                    <span class="block font-bold text-gray-800 text-sm">보이지 않게 만들기</span>
+                    <span class="block text-xs text-gray-500 mt-0.5">담배, 라이터 등 흡연 유발 환경을 모두 제거했는가?</span>
+                    <button onclick="openModal('modalTrigger'); event.preventDefault();" class="mt-2 text-[11px] bg-white border border-gray-200 px-2 py-1 rounded text-gray-600 font-medium active:bg-gray-100">흡연 유발 상황 (트리거) 관리</button>
+                </div>
+            </label>
+
+            <!-- 2법칙 -->
+            <label class="flex items-start p-3 bg-gray-50 rounded-xl border border-gray-100 cursor-pointer active:bg-gray-100">
+                <input type="checkbox" class="daily-check mt-1 w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                <div class="ml-3 flex-1">
+                    <span class="block font-bold text-gray-800 text-sm">매력적이지 않게 만들기</span>
+                    <span class="block text-xs text-gray-500 mt-0.5">금연의 장점을 상기하고 '비흡연자'로서의 정체성을 다졌는가?</span>
+                    <div class="flex space-x-2 mt-2">
+                        <button onclick="openModal('modalPros'); event.preventDefault();" class="text-[11px] bg-blue-50 text-blue-700 px-2 py-1 rounded font-medium active:bg-blue-100">👍 좋아요 (장점)</button>
+                        <button onclick="openModal('modalCons'); event.preventDefault();" class="text-[11px] bg-red-50 text-red-700 px-2 py-1 rounded font-medium active:bg-red-100">👎 나빠요 (단점)</button>
                     </div>
                 </div>
+            </label>
 
-                <!-- Law 2 -->
-                <div class="p-2 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-200">
-                    <label class="flex items-start gap-3 cursor-pointer">
-                        <input type="checkbox" class="habit-checkbox mt-1 w-5 h-5 rounded border-slate-300">
-                        <div class="flex-1">
-                            <p class="font-bold text-slate-700">매력적이지 않게 만들기</p>
-                            <p class="text-xs text-slate-500 mt-1">금연의 장점을 상기하고 '비흡연자'로서의 정체성을 다졌는가?</p>
-                        </div>
-                    </label>
-                    <div class="mt-3 ml-8 flex gap-2">
-                        <button onclick="openProsConsModal('pros')" class="text-xs bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg border border-blue-200 hover:bg-blue-100 transition shadow-sm">👍 좋아요 (장점)</button>
-                        <button onclick="openProsConsModal('cons')" class="text-xs bg-red-50 text-red-700 px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition shadow-sm">👎 나빠요 (단점)</button>
+            <!-- 3법칙 -->
+            <label class="flex items-start p-3 bg-gray-50 rounded-xl border border-gray-100 cursor-pointer active:bg-gray-100">
+                <input type="checkbox" class="daily-check mt-1 w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                <div class="ml-3 flex-1">
+                    <span class="block font-bold text-gray-800 text-sm">하기 어렵게 만들기</span>
+                    <span class="block text-xs text-gray-500 mt-0.5">담배를 피우려면 아주 귀찮은 과정을 거치도록 마찰력을 늘렸는가?</span>
+                    <button onclick="openModal('modalFriction'); event.preventDefault();" class="mt-2 text-[11px] bg-white border border-gray-200 px-2 py-1 rounded text-gray-600 font-medium active:bg-gray-100">나만의 금연 규칙 설정</button>
+                </div>
+            </label>
+
+            <!-- 4법칙 -->
+            <label class="flex items-start p-3 bg-gray-50 rounded-xl border border-gray-100 cursor-pointer active:bg-gray-100">
+                <input type="checkbox" class="daily-check mt-1 w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                <div class="ml-3 flex-1">
+                    <span class="block font-bold text-gray-800 text-sm">불만족스럽게 만들기</span>
+                    <span class="block text-xs text-gray-500 mt-0.5">흡연 시 즉각적인 벌칙을 받고, 금연 시 보상을 받도록 설계했는가?</span>
+                    <div class="flex space-x-2 mt-2">
+                        <button onclick="openModal('modalPenalty'); event.preventDefault();" class="text-[11px] bg-red-50 text-red-700 px-2 py-1 rounded font-medium active:bg-red-100">💸 패널티 (흡연 시)</button>
+                        <button onclick="openModal('modalReward'); event.preventDefault();" class="text-[11px] bg-yellow-50 text-yellow-700 px-2 py-1 rounded font-medium active:bg-yellow-100">🎁 보상 (금연 시)</button>
                     </div>
                 </div>
+            </label>
 
-                <!-- Law 3 -->
-                <div class="p-2 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-200">
-                    <label class="flex items-start gap-3 cursor-pointer">
-                        <input type="checkbox" class="habit-checkbox mt-1 w-5 h-5 rounded border-slate-300">
-                        <div class="flex-1">
-                            <p class="font-bold text-slate-700">하기 어렵게 만들기</p>
-                            <p class="text-xs text-slate-500 mt-1">흡연이 불편한 환경을 유지하고 대체제(물, 껌)를 활용했는가?</p>
-                        </div>
-                    </label>
-                    <div class="mt-3 ml-8">
-                        <button onclick="openFrictionModal()" class="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-200 transition flex items-center gap-1 shadow-sm">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                            불편한 상황 및 대체 행동 기록
-                        </button>
-                    </div>
+        </div>
+    </div>
+
+    <!-- 하단 액션 버튼 -->
+    <div class="px-5 pb-5 bg-white pt-2 border-t border-gray-100 flex space-x-2">
+        <button id="btnCheckIn" onclick="checkIn()" class="flex-1 bg-gray-400 text-white py-2.5 rounded-xl font-bold text-sm shadow-md transition-colors">모두 체크</button>
+        <button onclick="resetStreak()" class="flex-1 bg-red-50 text-red-600 py-2.5 rounded-xl font-bold text-sm active:bg-red-100 transition-colors">흡연(리셋)</button>
+    </div>
+
+    <!-- 1법칙: 트리거 모달 -->
+    <div id="modalTrigger" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white w-11/12 max-w-md rounded-2xl p-6 relative flex flex-col h-[85vh]">
+            <h3 class="font-bold text-lg mb-1">흡연 유발 상황 (트리거)</h3>
+            <p class="text-xs text-gray-500 mb-4">어떤 상황에서 담배 생각이 나는지 적고, 이를 피하기 위한 이행장치를 세워보세요.</p>
+            <div class="flex space-x-2 mb-4">
+                <input type="text" id="inputTrigger" placeholder="예: 식사 직후, 스트레스 받을 때" class="text-base flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                <button onclick="addTrigger()" class="bg-gray-800 text-white px-4 py-2 rounded-lg font-bold">추가</button>
+            </div>
+            <div id="listTrigger" class="space-y-2 flex-1 overflow-y-auto mb-4 min-h-0"></div>
+            <button onclick="closeModal('modalTrigger')" class="w-full bg-gray-100 text-gray-800 py-3 rounded-xl font-bold">확인 및 닫기</button>
+        </div>
+    </div>
+
+    <!-- 2법칙: 좋아요(장점) 모달 -->
+    <div id="modalPros" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white w-11/12 max-w-md rounded-2xl p-6 relative flex flex-col h-[85vh]">
+            <h3 class="font-bold text-lg text-blue-700 mb-1">👍 금연의 장점</h3>
+            <p class="text-xs text-gray-500 mb-4">금연으로 얻을 수 있는 이득과 긍정적인 변화를 자유롭게 적어보세요.</p>
+            <div class="flex space-x-2 mb-4">
+                <input type="text" id="inputPros" placeholder="내용 입력..." class="text-base flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                <button onclick="addPC('pros')" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">추가</button>
+            </div>
+            <div id="listPros" class="space-y-2 flex-1 overflow-y-auto mb-4 min-h-0"></div>
+            <button onclick="closeModal('modalPros')" class="w-full bg-gray-100 text-gray-800 py-3 rounded-xl font-bold">확인 및 닫기</button>
+        </div>
+    </div>
+
+    <!-- 2법칙: 나빠요(단점) 모달 -->
+    <div id="modalCons" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white w-11/12 max-w-md rounded-2xl p-6 relative flex flex-col h-[85vh]">
+            <h3 class="font-bold text-lg text-red-700 mb-1">👎 흡연의 단점</h3>
+            <p class="text-xs text-gray-500 mb-4">담배를 피움으로써 잃게 되는 것과 부정적인 영향을 적어보세요.</p>
+            <div class="flex space-x-2 mb-4">
+                <input type="text" id="inputCons" placeholder="내용 입력..." class="text-base flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                <button onclick="addPC('cons')" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold">추가</button>
+            </div>
+            <div id="listCons" class="space-y-2 flex-1 overflow-y-auto mb-4 min-h-0"></div>
+            <button onclick="closeModal('modalCons')" class="w-full bg-gray-100 text-gray-800 py-3 rounded-xl font-bold">확인 및 닫기</button>
+        </div>
+    </div>
+
+    <!-- 3법칙: 마찰력(나만의 규칙) 모달 -->
+    <div id="modalFriction" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white w-11/12 max-w-md rounded-2xl p-6 relative flex flex-col h-[85vh]">
+            <h3 class="font-bold text-lg mb-1">나만의 금연 규칙 설정</h3>
+            <p class="text-xs text-gray-500 mb-4">흡연을 귀찮게 만드는 장벽이나, 대체할 행동을 적고 실행 여부를 체크해 보세요.</p>
+            <div class="flex space-x-2 mb-4">
+                <input type="text" id="inputFriction" placeholder="예: 흡연 욕구 시 냉수 한 컵 마시기" class="text-base flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                <button onclick="addFriction()" class="bg-gray-800 text-white px-4 py-2 rounded-lg font-bold">추가</button>
+            </div>
+            <div id="listFriction" class="space-y-2 flex-1 overflow-y-auto mb-4 min-h-0"></div>
+            
+            <!-- 새로 추가된 흡연 기록 영역 -->
+            <div class="bg-red-50 border border-red-100 rounded-xl p-3 mb-4 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-bold text-red-800">모든 규칙을 하고도 피웠다면</p>
+                    <p class="text-[11px] text-red-600 mt-0.5">버튼을 눌러 흡연 횟수와 시간을 기록하세요</p>
                 </div>
-
-                <!-- Law 4 -->
-                <div class="p-2 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-200">
-                    <label class="flex items-start gap-3 cursor-pointer">
-                        <input type="checkbox" class="habit-checkbox mt-1 w-5 h-5 rounded border-slate-300">
-                        <div class="flex-1">
-                            <p class="font-bold text-slate-700">불만족스럽게 만들기</p>
-                            <p class="text-xs text-slate-500 mt-1">흡연 시의 패널티(벌금 등)를 기억하고 주변에 금연 사실을 알렸는가?</p>
-                        </div>
-                    </label>
-                    <div class="mt-3 ml-8 flex gap-2">
-                        <button onclick="openPRModal('penalty')" class="text-xs bg-red-50 text-red-700 px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition shadow-sm">💸 패널티 (흡연 시)</button>
-                        <button onclick="openPRModal('reward')" class="text-xs bg-yellow-50 text-yellow-700 px-3 py-1.5 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition shadow-sm">🎁 보상 (금연 시)</button>
-                    </div>
-                </div>
+                <button onclick="logSmoking()" class="bg-red-500 active:bg-red-600 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl font-bold shadow-md transition-colors">
+                    +
+                </button>
             </div>
-        </div>
 
-        <!-- Action Buttons -->
-        <div class="px-6 pb-6 pt-2 flex gap-2">
-            <button id="checkin-btn" disabled class="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-slate-300 cursor-not-allowed transition duration-300 shadow-sm">
-                모두 체크
-            </button>
-            <button id="reset-btn" class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition duration-300 shrink-0">
-                흡연(리셋)
-            </button>
-        </div>
-
-    </div>
-
-    <!-- Message Modal (Replaces alert) -->
-    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4">
-        <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl transform scale-95 transition-transform duration-300" id="modal-content">
-            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-                🔄
-            </div>
-            <h3 class="text-xl font-bold mb-2 text-slate-800">기록이 초기화되었습니다</h3>
-            <p class="text-slate-600 text-sm mb-6">실수할 수도 있습니다. 중요한 것은 포기하지 않고 다시 시작하는 것입니다. 당신은 여전히 비흡연자입니다!</p>
-            <button id="close-modal-btn" class="w-full py-3 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-700 transition">
-                다시 시작하기
-            </button>
+            <button onclick="closeModal('modalFriction')" class="w-full bg-gray-100 text-gray-800 py-3 rounded-xl font-bold">확인 및 닫기</button>
         </div>
     </div>
 
-    <!-- Pros & Cons Modal -->
-    <div id="pros-cons-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4">
-        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform transition-transform duration-300 flex flex-col h-[85vh]">
-            <h3 id="pc-modal-title" class="text-lg font-bold mb-4 text-slate-800">장단점 기록</h3>
-            <div class="flex gap-2 mb-4">
-                <input type="text" id="pc-input" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="내용을 입력하세요...">
-                <button onclick="addProsCons()" id="pc-add-btn" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700">추가</button>
+    <!-- 4법칙: 패널티 모달 -->
+    <div id="modalPenalty" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white w-11/12 max-w-md rounded-2xl p-6 relative flex flex-col h-[85vh]">
+            <h3 class="font-bold text-lg text-red-700 mb-1">💸 흡연 시 패널티</h3>
+            <p class="text-xs text-gray-500 mb-4">규칙을 어겼을 때 치러야 할 뼈아픈 대가를 적어보세요.</p>
+            <div class="flex space-x-2 mb-4">
+                <input type="text" id="inputPenalty" placeholder="내용 입력..." class="text-base flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                <button onclick="addPR('penalty')" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold">추가</button>
             </div>
-            <ul id="pc-list" class="flex-1 overflow-y-auto space-y-2 mb-6 text-sm text-slate-600">
-                <!-- Items go here -->
-            </ul>
-            <button onclick="closeModal('pros-cons-modal')" class="w-full py-3 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition mt-auto">
-                닫기
-            </button>
+            <div id="listPenalty" class="space-y-2 flex-1 overflow-y-auto mb-4 min-h-0"></div>
+            <button onclick="closeModal('modalPenalty')" class="w-full bg-gray-100 text-gray-800 py-3 rounded-xl font-bold">확인 및 닫기</button>
         </div>
     </div>
 
-    <!-- Friction Modal -->
-    <div id="friction-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4">
-        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform transition-transform duration-300 flex flex-col h-[85vh]">
-            <h3 class="text-lg font-bold mb-1 text-slate-800">나만의 금연 규칙 설정</h3>
-            <p class="text-xs text-slate-500 mb-4">흡연을 귀찮게 만드는 장벽이나, 대체할 행동을 적고 실행 여부를 체크해 보세요.</p>
-            <div class="flex gap-2 mb-4">
-                <input type="text" id="friction-input" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800" placeholder="예: 흡연 욕구 시 냉수 한 컵 마시기">
-                <button onclick="addFriction()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-700">추가</button>
+    <!-- 4법칙: 보상 모달 -->
+    <div id="modalReward" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white w-11/12 max-w-md rounded-2xl p-6 relative flex flex-col h-[85vh]">
+            <h3 class="font-bold text-lg text-yellow-600 mb-1">🎁 금연 시 보상</h3>
+            <p class="text-xs text-gray-500 mb-4">목표 달성 시 스스로에게 줄 선물을 적어보세요.</p>
+            <div class="flex space-x-2 mb-4">
+                <input type="text" id="inputReward" placeholder="내용 입력..." class="text-base flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-yellow-500">
+                <button onclick="addPR('reward')" class="bg-yellow-500 text-white px-4 py-2 rounded-lg font-bold">추가</button>
             </div>
-            <div class="flex-1 overflow-y-auto mb-6">
-                <ul id="friction-list" class="space-y-2 text-sm text-slate-700">
-                    <!-- Items go here -->
-                </ul>
-            </div>
-            <button onclick="closeModal('friction-modal')" class="w-full py-3 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition mt-auto">
-                확인 및 닫기
-            </button>
-        </div>
-    </div>
-
-    <!-- Penalty/Reward Modal -->
-    <div id="pr-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4">
-        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform transition-transform duration-300 flex flex-col h-[85vh]">
-            <h3 id="pr-modal-title" class="text-lg font-bold mb-1 text-slate-800">패널티 및 보상</h3>
-            <p id="pr-modal-desc" class="text-xs text-slate-500 mb-4">내용을 적고 체크해보세요.</p>
-            <div class="flex gap-2 mb-4">
-                <input type="text" id="pr-input" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800" placeholder="내용 입력...">
-                <button onclick="addPR()" id="pr-add-btn" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-700">추가</button>
-            </div>
-            <div class="flex-1 overflow-y-auto mb-6">
-                <ul id="pr-list" class="space-y-2 text-sm text-slate-700">
-                    <!-- Items go here -->
-                </ul>
-            </div>
-            <button onclick="closeModal('pr-modal')" class="w-full py-3 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition mt-auto">
-                확인 및 닫기
-            </button>
-        </div>
-    </div>
-
-    <!-- Trigger (Law 1) Modal -->
-    <div id="trigger-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4">
-        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform transition-transform duration-300 flex flex-col h-[85vh]">
-            <h3 class="text-lg font-bold mb-1 text-slate-800">흡연 유발 상황 (트리거)</h3>
-            <p class="text-xs text-slate-500 mb-4">담배 생각이 나는 상황을 적고, 이겨냈다면 체크하세요.</p>
-            <div class="flex gap-2 mb-4">
-                <input type="text" id="trigger-input" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800" placeholder="예: 식사 직후, 스트레스 받을 때">
-                <button onclick="addTrigger()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-700">추가</button>
-            </div>
-            <div class="flex-1 overflow-y-auto mb-6">
-                <ul id="trigger-list" class="space-y-2 text-sm text-slate-700">
-                    <!-- Items go here -->
-                </ul>
-            </div>
-            <button onclick="closeModal('trigger-modal')" class="w-full py-3 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition mt-auto">
-                확인 및 닫기
-            </button>
+            <div id="listReward" class="space-y-2 flex-1 overflow-y-auto mb-4 min-h-0"></div>
+            <button onclick="closeModal('modalReward')" class="w-full bg-gray-100 text-gray-800 py-3 rounded-xl font-bold">확인 및 닫기</button>
         </div>
     </div>
 
     <script>
-        // --- State Variables ---
-        let streak = 0;
-        let todayChecked = false;
-        let lastCheckinDate = '';
+        // 전역 상태 변수
+        let streak = parseInt(localStorage.getItem('streak') || '0');
+        let triggerList = JSON.parse(localStorage.getItem('triggerList') || '[]');
+        let prosList = JSON.parse(localStorage.getItem('prosList') || '[]');
+        let consList = JSON.parse(localStorage.getItem('consList') || '[]');
+        let frictionList = JSON.parse(localStorage.getItem('frictionList') || '[]');
+        let penaltyList = JSON.parse(localStorage.getItem('penaltyList') || '[]');
+        let rewardList = JSON.parse(localStorage.getItem('rewardList') || '[]');
         
-        let currentPCType = 'pros';
-        let currentPRType = 'penalty';
+        // 오늘 날짜 확인 로직 (체크박스 초기화용)
+        const todayStr = new Date().toDateString();
+        let lastCheckIn = localStorage.getItem('lastCheckIn') || '';
 
-        // Default Data
-        let pcData = { 
-            pros: [], 
-            cons: ['돈이 낭비된다', '건강이 악화된다', '냄새가 난다'] 
-        };
-        
-        let triggerData = [
-            { text: '스트레스 받을 때', commitment: '심호흡 3번 크게 하기', checked: false },
-            { text: '식사 직후', commitment: '바로 화장실 가서 양치질 하기', checked: false },
-            { text: '술 마실 때', commitment: '이행장치 입력 (클릭하여 수정)', checked: false }
-        ];
-
-        let frictionData = [
-            { text: '담배 피고 싶을 때 심호흡 10번 하기', checked: false },
-            { text: '편의점 갈 때 지갑 안 가져가기', checked: false }
-        ];
-
-        let prData = {
-            penalty: [{ text: '배우자/친구에게 5만원 입금하기', checked: false }],
-            reward: [{ text: '1주일 성공 시 좋아하는 배달음식 시키기', checked: false }]
-        };
-
-        // DOM Elements
-        const streakDisplay = document.getElementById('streak-count');
-        const checkboxes = document.querySelectorAll('.habit-checkbox');
-        const checkinBtn = document.getElementById('checkin-btn');
-        const resetBtn = document.getElementById('reset-btn');
-        const successMessage = document.getElementById('success-message');
-        const modal = document.getElementById('modal');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const modalContent = document.getElementById('modal-content');
-
-        // --- Local Storage Functions ---
-        const STORAGE_KEY = 'atomicHabitsQuitSmoking';
-
-        function saveState() {
-            const state = {
-                streak,
-                todayChecked,
-                lastCheckinDate,
-                mainCheckboxes: Array.from(checkboxes).map(cb => cb.checked),
-                pcData,
-                triggerData,
-                frictionData,
-                prData
-            };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        }
-
-        function loadState() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                try {
-                    const state = JSON.parse(saved);
-                    streak = state.streak || 0;
-                    lastCheckinDate = state.lastCheckinDate || '';
-                    
-                    const todayStr = new Date().toDateString();
-                    
-                    // Daily Reset Check
-                    if (lastCheckinDate !== todayStr && state.todayChecked) {
-                        // It's a new day, keep the streak but reset the daily checkboxes
-                        todayChecked = false;
-                        state.mainCheckboxes = [false, false, false, false];
-                    } else {
-                        todayChecked = state.todayChecked || false;
-                    }
-
-                    // Restore arrays/objects if they exist
-                    if (state.pcData) pcData = state.pcData;
-                    if (state.triggerData) triggerData = state.triggerData;
-                    if (state.frictionData) frictionData = state.frictionData;
-                    if (state.prData) prData = state.prData;
-
-                    // Restore main checkboxes
-                    if (state.mainCheckboxes) {
-                        checkboxes.forEach((cb, i) => {
-                            cb.checked = state.mainCheckboxes[i];
-                        });
-                    }
-                } catch (e) {
-                    console.error("Error parsing local storage data", e);
-                }
-            }
-
-            // Update UI based on loaded state
-            streakDisplay.innerText = streak;
-            if (todayChecked) {
-                setUIAsCheckedIn();
+        // DOM 요소 로드 후 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            if (lastCheckIn !== todayStr) {
+                // 날짜가 바뀌었으면 일일 점검 초기화
+                document.querySelectorAll('.daily-check').forEach(cb => cb.checked = false);
             } else {
-                updateButtonState();
+                // 오늘 이미 달성했다면 버튼 상태 변경
+                const btn = document.getElementById('btnCheckIn');
+                btn.classList.remove('bg-gray-400');
+                btn.classList.add('bg-blue-600');
+                btn.innerText = '모두 체크 (오늘 달성)';
+                document.querySelectorAll('.daily-check').forEach(cb => cb.checked = true);
             }
+
+            updateUI();
+            updateSmokingLogUI();
+            renderTrigger();
+            renderPC('pros');
+            renderPC('cons');
+            renderFriction();
+            renderPR('penalty');
+            renderPR('reward');
+
+            const checks = document.querySelectorAll('.daily-check');
+            checks.forEach(check => {
+                check.addEventListener('change', checkDailyCompletion);
+            });
+        });
+
+        // 연속 금연일 저장 및 UI 업데이트
+        function updateUI() {
+            localStorage.setItem('streak', streak);
+            document.getElementById('streakCount').innerText = streak;
         }
 
-        // --- Core UI & Logic ---
-        function updateButtonState() {
-            if (todayChecked) return;
-            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        // --- 흡연 기록 모니터링 기능 ---
+        function logSmoking() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const timeStr = `${hours}:${minutes}`;
+            
+            let logs = JSON.parse(localStorage.getItem('todaySmokingLog') || '[]');
+            logs.push(timeStr);
+            
+            localStorage.setItem('todaySmokingLog', JSON.stringify(logs));
+            localStorage.setItem('smokingLog_date', todayStr);
+            
+            // 흡연 시 Streak 리셋
+            streak = 0;
+            localStorage.setItem('lastCheckIn', ''); // 오늘 달성 기록 무효화
+            document.querySelectorAll('.daily-check').forEach(cb => cb.checked = false);
+            
+            updateUI();
+            updateSmokingLogUI();
+            checkDailyCompletion();
+            
+            alert(`오늘 ${logs.length}번째 흡연이 기록되었습니다. (${timeStr})\n연속 금연 기록이 0일로 리셋됩니다. 다시 시작해봐요!`);
+            closeModal('modalFriction');
+        }
+
+        function updateSmokingLogUI() {
+            const date = localStorage.getItem('smokingLog_date');
+            let logs = [];
+            if (date === todayStr) {
+                logs = JSON.parse(localStorage.getItem('todaySmokingLog') || '[]');
+            } else {
+                // 날짜가 다르면 흡연 기록 리셋
+                localStorage.removeItem('todaySmokingLog');
+                localStorage.removeItem('smokingLog_date');
+            }
+            
+            document.getElementById('todaySmokeCount').innerText = logs.length;
+            document.getElementById('todaySmokeTimes').innerText = logs.length > 0 ? '(' + logs.join(', ') + ')' : '';
+        }
+        // ------------------------------
+
+        // 일일 점검 완료 로직
+        function checkDailyCompletion() {
+            const checks = document.querySelectorAll('.daily-check');
+            const allChecked = Array.from(checks).every(c => c.checked);
+            const btn = document.getElementById('btnCheckIn');
             
             if (allChecked) {
-                checkinBtn.disabled = false;
-                checkinBtn.classList.remove('bg-slate-300', 'cursor-not-allowed');
-                checkinBtn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'hover:shadow-lg', 'transform', 'hover:-translate-y-0.5');
-                checkinBtn.innerText = "금연 완료!";
+                btn.classList.remove('bg-gray-400');
+                btn.classList.add('bg-blue-600');
+                btn.innerText = '모두 체크 (오늘 달성)';
             } else {
-                checkinBtn.disabled = true;
-                checkinBtn.classList.add('bg-slate-300', 'cursor-not-allowed');
-                checkinBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'hover:shadow-lg', 'transform', 'hover:-translate-y-0.5');
-                checkinBtn.innerText = "모두 체크";
+                btn.classList.add('bg-gray-400');
+                btn.classList.remove('bg-blue-600');
+                btn.innerText = '항목을 모두 체크해주세요';
             }
-            saveState(); // Save checkbox state whenever they change
         }
 
-        function setUIAsCheckedIn() {
-            checkinBtn.disabled = true;
-            checkinBtn.classList.remove('bg-blue-600', 'bg-slate-300', 'hover:bg-blue-700', 'hover:shadow-lg', 'transform', 'hover:-translate-y-0.5', 'cursor-not-allowed');
-            checkinBtn.classList.add('bg-green-500', 'cursor-default');
-            checkinBtn.innerText = "점검 완료 👏";
-            checkboxes.forEach(cb => cb.disabled = true);
-            successMessage.classList.remove('hidden');
-            successMessage.classList.add('fade-in');
-        }
-
-        checkboxes.forEach(cb => {
-            cb.addEventListener('change', updateButtonState);
-        });
-
-        checkinBtn.addEventListener('click', () => {
-            if (checkinBtn.disabled || todayChecked) return;
+        function checkIn() {
+            const checks = document.querySelectorAll('.daily-check');
+            const allChecked = Array.from(checks).every(c => c.checked);
             
-            streak++;
-            streakDisplay.innerText = streak;
-            todayChecked = true;
-            lastCheckinDate = new Date().toDateString();
-            
-            setUIAsCheckedIn();
-            saveState();
-        });
-
-        resetBtn.addEventListener('click', () => {
-            streak = 0;
-            todayChecked = false;
-            streakDisplay.innerText = streak;
-
-            checkboxes.forEach(cb => {
-                cb.checked = false;
-                cb.disabled = false; 
-            });
-            
-            successMessage.classList.add('hidden');
-            checkinBtn.classList.remove('bg-green-500', 'cursor-default');
-            updateButtonState();
-            saveState();
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => {
-                modalContent.classList.remove('scale-95');
-                modalContent.classList.add('scale-100');
-            }, 10);
-        });
-
-        closeModalBtn.addEventListener('click', () => {
-            modalContent.classList.remove('scale-100');
-            modalContent.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.remove('flex');
-                modal.classList.add('hidden');
-            }, 200);
-        });
-
-        // --- Pros/Cons Modal ---
-        function openProsConsModal(type) {
-            currentPCType = type;
-            const modal = document.getElementById('pros-cons-modal');
-            const title = document.getElementById('pc-modal-title');
-            const btn = document.getElementById('pc-add-btn');
-            
-            if(type === 'pros') {
-                title.innerText = '👍 흡연의 장점 (정말 있을까요?)';
-                title.className = 'text-lg font-bold mb-4 text-blue-600';
-                btn.className = 'bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700';
-            } else {
-                title.innerText = '👎 흡연의 치명적인 단점';
-                title.className = 'text-lg font-bold mb-4 text-red-600';
-                btn.className = 'bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-700';
-            }
-            
-            renderPCList();
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function renderPCList() {
-            const list = document.getElementById('pc-list');
-            list.innerHTML = '';
-            if (pcData[currentPCType].length === 0) {
-                list.innerHTML = `<li class="text-center text-slate-400 py-4">등록된 내용이 없습니다.</li>`;
+            if (!allChecked) {
+                alert('4가지 법칙을 모두 실천하고 체크해주세요!');
                 return;
             }
-            pcData[currentPCType].forEach((item, index) => {
-                const li = document.createElement('li');
-                li.className = 'flex items-center bg-slate-50 p-2 rounded-lg border border-slate-100 shadow-sm gap-2';
-                li.innerHTML = `
-                    <div class="flex flex-col items-center justify-center shrink-0">
-                        <button onclick="movePC(${index}, -1)" class="p-0.5 text-slate-400 hover:text-blue-500 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === 0 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg></button>
-                        <button onclick="movePC(${index}, 1)" class="p-0.5 text-slate-400 hover:text-blue-500 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === pcData[currentPCType].length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
-                    </div>
-                    <span class="flex-1 cursor-pointer hover:bg-slate-200 px-1 py-1 rounded transition break-all text-sm" onclick="editPC(${index})" id="pc-text-${index}" title="클릭하여 수정">${item}</span> 
-                    <button onclick="deletePC(${index})" class="p-2 text-slate-400 hover:text-red-500 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>`;
-                list.appendChild(li);
-            });
-        }
 
-        function movePC(index, direction) {
-            const arr = pcData[currentPCType];
-            if (index + direction < 0 || index + direction >= arr.length) return;
-            const temp = arr[index];
-            arr[index] = arr[index + direction];
-            arr[index + direction] = temp;
-            renderPCList();
-            saveState();
-        }
-
-        function editPC(index) {
-            const span = document.getElementById(`pc-text-${index}`);
-            const currentText = pcData[currentPCType][index];
-            span.outerHTML = `<input type="text" id="pc-edit-${index}" value="${currentText}" class="flex-1 border border-blue-400 rounded px-2 py-1 text-base focus:outline-none focus:ring-1 focus:ring-blue-400" onblur="savePC(${index})" onkeydown="if(event.key === 'Enter') savePC(${index})">`;
-            document.getElementById(`pc-edit-${index}`).focus();
-        }
-
-        function savePC(index) {
-            const input = document.getElementById(`pc-edit-${index}`);
-            if(input) {
-                const val = input.value.trim();
-                if(val) pcData[currentPCType][index] = val;
-                renderPCList();
-                saveState();
+            if (lastCheckIn !== todayStr) {
+                streak++;
+                lastCheckIn = todayStr;
+                localStorage.setItem('lastCheckIn', lastCheckIn);
+                updateUI();
+                alert('오늘 하루도 훌륭합니다! 연속 금연일이 증가했습니다.');
+            } else {
+                alert('오늘은 이미 체크하셨습니다. 내일 또 만나요!');
             }
         }
 
-        function addProsCons() {
-            const input = document.getElementById('pc-input');
-            const val = input.value.trim();
-            if(val) {
-                pcData[currentPCType].push(val);
-                input.value = '';
-                renderPCList();
-                saveState();
+        function resetStreak() {
+            if(confirm("정말 담배를 피우셨나요? 기록이 0일로 리셋됩니다.")) {
+                streak = 0;
+                lastCheckIn = '';
+                localStorage.setItem('lastCheckIn', '');
+                document.querySelectorAll('.daily-check').forEach(c => c.checked = false);
+                checkDailyCompletion();
+                updateUI();
             }
         }
 
-        function deletePC(index) {
-            pcData[currentPCType].splice(index, 1);
-            renderPCList();
-            saveState();
-        }
-
-        // --- Trigger (Law 1) Modal ---
-        function openTriggerModal() {
-            const modal = document.getElementById('trigger-modal');
-            renderTriggerList();
+        // 모달 제어
+        function openModal(id) {
+            const modal = document.getElementById(id);
             modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            setTimeout(() => { modal.firstElementChild.classList.add('modal-enter-active'); }, 10);
         }
 
-        function renderTriggerList() {
-            const list = document.getElementById('trigger-list');
-            list.innerHTML = '';
-            triggerData.forEach((item, index) => {
-                const li = document.createElement('li');
-                li.className = `flex items-center gap-2 p-2 rounded-lg border transition ${item.checked ? 'bg-slate-50 border-slate-100' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`;
-                li.innerHTML = `
-                    <div class="flex flex-col items-center justify-center shrink-0">
-                        <button onclick="moveTrigger(${index}, -1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === 0 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg></button>
-                        <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleTrigger(${index})" class="my-0.5 w-5 h-5 rounded border-slate-300 accent-slate-800 cursor-pointer">
-                        <button onclick="moveTrigger(${index}, 1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === triggerData.length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
-                    </div>
-                    <div class="flex-1 flex flex-col min-w-0 px-1 gap-1">
-                        <span class="cursor-pointer hover:bg-slate-100 px-1 py-0.5 rounded transition break-all text-sm ${item.checked ? 'line-through text-slate-400' : 'text-slate-700'}" onclick="editTrigger(${index})" id="trigger-text-${index}" title="상황 클릭하여 수정">${item.text}</span>
-                        <span class="cursor-pointer hover:bg-orange-50 px-1 py-0.5 rounded transition break-all text-sm text-orange-500 font-medium" onclick="editCommitment(${index})" id="commitment-text-${index}" title="이행장치 클릭하여 수정">${item.commitment || '이행장치 입력 (클릭하여 수정)'}</span>
-                    </div>
-                    <button onclick="deleteTrigger(${index})" class="p-2 text-slate-300 hover:text-red-500 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-                `;
-                list.appendChild(li);
-            });
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            modal.firstElementChild.classList.remove('modal-enter-active');
+            setTimeout(() => { modal.classList.add('hidden'); }, 200);
         }
 
-        function moveTrigger(index, direction) {
-            if (index + direction < 0 || index + direction >= triggerData.length) return;
-            const temp = triggerData[index];
-            triggerData[index] = triggerData[index + direction];
-            triggerData[index + direction] = temp;
-            renderTriggerList();
-            saveState();
-        }
-
-        function editTrigger(index) {
-            const span = document.getElementById(`trigger-text-${index}`);
-            const currentText = triggerData[index].text;
-            span.outerHTML = `<input type="text" id="trigger-edit-${index}" value="${currentText}" class="flex-1 border border-slate-400 rounded px-2 py-1 text-base focus:outline-none focus:ring-1 focus:ring-slate-400" onblur="saveTrigger(${index})" onkeydown="if(event.key === 'Enter') saveTrigger(${index})">`;
-            document.getElementById(`trigger-edit-${index}`).focus();
-        }
-
-        function saveTrigger(index) {
-            const input = document.getElementById(`trigger-edit-${index}`);
-            if(input) {
-                const val = input.value.trim();
-                if(val) triggerData[index].text = val;
-                renderTriggerList();
-                saveState();
+        // 공통 배열 요소 이동 함수
+        function moveItem(list, index, direction, saveAndRenderFn) {
+            if (direction === 'up' && index > 0) {
+                [list[index - 1], list[index]] = [list[index], list[index - 1]];
+            } else if (direction === 'down' && index < list.length - 1) {
+                [list[index + 1], list[index]] = [list[index], list[index + 1]];
             }
+            saveAndRenderFn();
         }
 
-        function editCommitment(index) {
-            const span = document.getElementById(`commitment-text-${index}`);
-            const currentText = triggerData[index].commitment || '';
-            const placeholder = '이행장치 입력 (클릭하여 수정)';
-            const val = (currentText === placeholder) ? '' : currentText;
-            
-            // text-base is critical for input to prevent iOS zoom
-            span.outerHTML = `<input type="text" id="commitment-edit-${index}" value="${val}" placeholder="이행장치 입력..." class="border border-orange-300 rounded px-2 py-1 text-base text-orange-600 focus:outline-none focus:ring-1 focus:ring-orange-400 w-full bg-white shadow-inner" onblur="saveCommitment(${index})" onkeydown="if(event.key === 'Enter') saveCommitment(${index})">`;
-            document.getElementById(`commitment-edit-${index}`).focus();
-        }
-
-        function saveCommitment(index) {
-            const input = document.getElementById(`commitment-edit-${index}`);
-            if(input) {
-                const val = input.value.trim();
-                triggerData[index].commitment = val ? val : '이행장치 입력 (클릭하여 수정)';
-                renderTriggerList();
-                saveState();
-            }
-        }
-
+        // -------------------------
+        // 1법칙: 트리거 기능
+        // -------------------------
         function addTrigger() {
-            const input = document.getElementById('trigger-input');
-            const val = input.value.trim();
-            if(val) {
-                triggerData.push({ text: val, commitment: '이행장치 입력 (클릭하여 수정)', checked: false });
-                input.value = '';
-                renderTriggerList();
-                saveState();
-            }
+            const input = document.getElementById('inputTrigger');
+            if(input.value.trim() === '') return;
+            triggerList.push({ text: input.value.trim(), checked: false, device: '이행장치 입력 (클릭하여 수정)' });
+            input.value = '';
+            saveAndRenderTrigger();
         }
 
-        function toggleTrigger(index) {
-            triggerData[index].checked = !triggerData[index].checked;
-            renderTriggerList();
-            saveState();
+        function saveAndRenderTrigger() {
+            localStorage.setItem('triggerList', JSON.stringify(triggerList));
+            renderTrigger();
         }
 
-        function deleteTrigger(index) {
-            triggerData.splice(index, 1);
-            renderTriggerList();
-            saveState();
-        }
-
-        // --- Friction (Law 3) Modal ---
-        function openFrictionModal() {
-            const modal = document.getElementById('friction-modal');
-            renderFrictionList();
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function renderFrictionList() {
-            const list = document.getElementById('friction-list');
-            list.innerHTML = '';
-            frictionData.forEach((item, index) => {
-                const li = document.createElement('li');
-                li.className = `flex items-center gap-2 p-2 rounded-lg border transition ${item.checked ? 'bg-slate-50 border-slate-100' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`;
-                li.innerHTML = `
-                    <div class="flex flex-col items-center justify-center shrink-0">
-                        <button onclick="moveFriction(${index}, -1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === 0 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg></button>
-                        <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleFriction(${index})" class="my-0.5 w-5 h-5 rounded border-slate-300 accent-slate-800 cursor-pointer">
-                        <button onclick="moveFriction(${index}, 1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === frictionData.length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
+        function renderTrigger() {
+            const listEl = document.getElementById('listTrigger');
+            listEl.innerHTML = '';
+            triggerList.forEach((item, i) => {
+                const upDisabled = i === 0 ? 'opacity-20 pointer-events-none' : 'text-gray-400';
+                const downDisabled = i === triggerList.length - 1 ? 'opacity-20 pointer-events-none' : 'text-gray-400';
+                
+                listEl.innerHTML += `
+                    <div class="flex items-center p-3 border border-gray-200 rounded-xl bg-white">
+                        <div class="flex flex-col items-center mr-3">
+                            <button onclick="moveItem(triggerList, ${i}, 'up', saveAndRenderTrigger)" class="${upDisabled} text-lg leading-none p-1">▲</button>
+                            <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleTrigger(${i})" class="w-5 h-5 text-blue-600 rounded my-1 border-gray-300">
+                            <button onclick="moveItem(triggerList, ${i}, 'down', saveAndRenderTrigger)" class="${downDisabled} text-lg leading-none p-1">▼</button>
+                        </div>
+                        <div class="flex-1 flex flex-col justify-center">
+                            <span class="text-gray-800 ${item.checked ? 'line-through text-gray-400' : ''}" onclick="editTrigger(${i}, 'text')">${item.text}</span>
+                            <span class="text-xs text-orange-500 font-medium mt-1 cursor-pointer" onclick="editTrigger(${i}, 'device')">${item.device}</span>
+                        </div>
+                        <button onclick="deleteTrigger(${i})" class="text-gray-400 p-2 ml-2">✕</button>
                     </div>
-                    <span class="flex-1 cursor-pointer hover:bg-slate-100 px-1 py-1 rounded transition break-all text-sm ${item.checked ? 'line-through text-slate-400' : 'text-slate-700'}" onclick="editFriction(${index})" id="friction-text-${index}" title="클릭하여 수정">${item.text}</span>
-                    <button onclick="deleteFriction(${index})" class="p-2 text-slate-300 hover:text-red-500 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
                 `;
-                list.appendChild(li);
             });
         }
 
-        function moveFriction(index, direction) {
-            if (index + direction < 0 || index + direction >= frictionData.length) return;
-            const temp = frictionData[index];
-            frictionData[index] = frictionData[index + direction];
-            frictionData[index + direction] = temp;
-            renderFrictionList();
-            saveState();
+        function editTrigger(index, field) {
+            const item = triggerList[index];
+            const newValue = prompt("내용을 수정하세요:", item[field]);
+            if (newValue !== null && newValue.trim() !== '') {
+                item[field] = newValue.trim();
+                saveAndRenderTrigger();
+            }
+        }
+
+        function toggleTrigger(index) { triggerList[index].checked = !triggerList[index].checked; saveAndRenderTrigger(); }
+        function deleteTrigger(index) { triggerList.splice(index, 1); saveAndRenderTrigger(); }
+
+        // -------------------------
+        // 2법칙: 장단점(PC) 기능
+        // -------------------------
+        function addPC(type) {
+            const input = document.getElementById(type === 'pros' ? 'inputPros' : 'inputCons');
+            const list = type === 'pros' ? prosList : consList;
+            if(input.value.trim() === '') return;
+            list.push(input.value.trim());
+            input.value = '';
+            saveAndRenderPC(type);
+        }
+
+        function saveAndRenderPC(type) {
+            localStorage.setItem(type + 'List', JSON.stringify(type === 'pros' ? prosList : consList));
+            renderPC(type);
+        }
+
+        function renderPC(type) {
+            const list = type === 'pros' ? prosList : consList;
+            const listEl = document.getElementById(type === 'pros' ? 'listPros' : 'listCons');
+            listEl.innerHTML = '';
+            list.forEach((text, i) => {
+                const upDisabled = i === 0 ? 'opacity-20 pointer-events-none' : 'text-gray-400';
+                const downDisabled = i === list.length - 1 ? 'opacity-20 pointer-events-none' : 'text-gray-400';
+
+                listEl.innerHTML += `
+                    <div class="flex items-center p-3 border border-gray-200 rounded-xl bg-white">
+                        <div class="flex flex-col items-center mr-3">
+                            <button onclick="moveItem(${type}List, ${i}, 'up', () => saveAndRenderPC('${type}'))" class="${upDisabled} text-lg leading-none p-1">▲</button>
+                            <button onclick="moveItem(${type}List, ${i}, 'down', () => saveAndRenderPC('${type}'))" class="${downDisabled} text-lg leading-none p-1">▼</button>
+                        </div>
+                        <span class="flex-1 text-gray-800" onclick="editPC('${type}', ${i})">${text}</span>
+                        <button onclick="deletePC('${type}', ${i})" class="text-gray-400 p-2 ml-2">✕</button>
+                    </div>
+                `;
+            });
+        }
+
+        function editPC(type, index) {
+            const list = type === 'pros' ? prosList : consList;
+            const newValue = prompt("내용을 수정하세요:", list[index]);
+            if (newValue !== null && newValue.trim() !== '') {
+                list[index] = newValue.trim();
+                saveAndRenderPC(type);
+            }
+        }
+
+        function deletePC(type, index) {
+            const list = type === 'pros' ? prosList : consList;
+            list.splice(index, 1);
+            saveAndRenderPC(type);
+        }
+
+        // -------------------------
+        // 3법칙: 마찰력(규칙) 기능
+        // -------------------------
+        function addFriction() {
+            const input = document.getElementById('inputFriction');
+            if(input.value.trim() === '') return;
+            frictionList.push({ text: input.value.trim(), checked: false });
+            input.value = '';
+            saveAndRenderFriction();
+        }
+
+        function saveAndRenderFriction() {
+            localStorage.setItem('frictionList', JSON.stringify(frictionList));
+            renderFriction();
+        }
+
+        function renderFriction() {
+            const listEl = document.getElementById('listFriction');
+            listEl.innerHTML = '';
+            frictionList.forEach((item, i) => {
+                const upDisabled = i === 0 ? 'opacity-20 pointer-events-none' : 'text-gray-400';
+                const downDisabled = i === frictionList.length - 1 ? 'opacity-20 pointer-events-none' : 'text-gray-400';
+
+                listEl.innerHTML += `
+                    <div class="flex items-center p-3 border border-gray-200 rounded-xl bg-white">
+                        <div class="flex flex-col items-center mr-3">
+                            <button onclick="moveItem(frictionList, ${i}, 'up', saveAndRenderFriction)" class="${upDisabled} text-lg leading-none p-1">▲</button>
+                            <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleFriction(${i})" class="w-5 h-5 text-blue-600 rounded my-1 border-gray-300">
+                            <button onclick="moveItem(frictionList, ${i}, 'down', saveAndRenderFriction)" class="${downDisabled} text-lg leading-none p-1">▼</button>
+                        </div>
+                        <span class="flex-1 text-gray-800 ${item.checked ? 'line-through text-gray-400' : ''}" onclick="editFriction(${i})">${item.text}</span>
+                        <button onclick="deleteFriction(${i})" class="text-gray-400 p-2 ml-2">✕</button>
+                    </div>
+                `;
+            });
         }
 
         function editFriction(index) {
-            const span = document.getElementById(`friction-text-${index}`);
-            const currentText = frictionData[index].text;
-            span.outerHTML = `<input type="text" id="friction-edit-${index}" value="${currentText}" class="flex-1 border border-slate-400 rounded px-2 py-1 text-base focus:outline-none focus:ring-1 focus:ring-slate-400" onblur="saveFriction(${index})" onkeydown="if(event.key === 'Enter') saveFriction(${index})">`;
-            document.getElementById(`friction-edit-${index}`).focus();
-        }
-
-        function saveFriction(index) {
-            const input = document.getElementById(`friction-edit-${index}`);
-            if(input) {
-                const val = input.value.trim();
-                if(val) frictionData[index].text = val;
-                renderFrictionList();
-                saveState();
+            const newValue = prompt("내용을 수정하세요:", frictionList[index].text);
+            if (newValue !== null && newValue.trim() !== '') {
+                frictionList[index].text = newValue.trim();
+                saveAndRenderFriction();
             }
         }
 
-        function addFriction() {
-            const input = document.getElementById('friction-input');
-            const val = input.value.trim();
-            if(val) {
-                frictionData.push({ text: val, checked: false });
-                input.value = '';
-                renderFrictionList();
-                saveState();
-            }
+        function toggleFriction(index) { frictionList[index].checked = !frictionList[index].checked; saveAndRenderFriction(); }
+        function deleteFriction(index) { frictionList.splice(index, 1); saveAndRenderFriction(); }
+
+        // -------------------------
+        // 4법칙: 패널티/보상(PR) 기능
+        // -------------------------
+        function addPR(type) {
+            const input = document.getElementById(type === 'penalty' ? 'inputPenalty' : 'inputReward');
+            const list = type === 'penalty' ? penaltyList : rewardList;
+            if(input.value.trim() === '') return;
+            list.push({ text: input.value.trim(), checked: false });
+            input.value = '';
+            saveAndRenderPR(type);
         }
 
-        function toggleFriction(index) {
-            frictionData[index].checked = !frictionData[index].checked;
-            renderFrictionList();
-            saveState();
+        function saveAndRenderPR(type) {
+            localStorage.setItem(type + 'List', JSON.stringify(type === 'penalty' ? penaltyList : rewardList));
+            renderPR(type);
         }
 
-        function deleteFriction(index) {
-            frictionData.splice(index, 1);
-            renderFrictionList();
-            saveState();
-        }
+        function renderPR(type) {
+            const list = type === 'penalty' ? penaltyList : rewardList;
+            const listEl = document.getElementById(type === 'penalty' ? 'listPenalty' : 'listReward');
+            listEl.innerHTML = '';
+            list.forEach((item, i) => {
+                const upDisabled = i === 0 ? 'opacity-20 pointer-events-none' : 'text-gray-400';
+                const downDisabled = i === list.length - 1 ? 'opacity-20 pointer-events-none' : 'text-gray-400';
 
-        // --- Penalty/Reward (Law 4) Modal ---
-        function openPRModal(type) {
-            currentPRType = type;
-            const modal = document.getElementById('pr-modal');
-            const title = document.getElementById('pr-modal-title');
-            const desc = document.getElementById('pr-modal-desc');
-            const input = document.getElementById('pr-input');
-            const btn = document.getElementById('pr-add-btn');
-            
-            if(type === 'penalty') {
-                title.innerText = '💸 흡연 시 패널티 (벌칙)';
-                title.className = 'text-lg font-bold mb-1 text-red-600';
-                desc.innerText = '담배를 피웠을 때 스스로에게 줄 고통(벌금 등)을 적어보세요.';
-                btn.className = 'bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-700 transition';
-                input.className = 'flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500';
-            } else {
-                title.innerText = '🎁 금연 시 보상';
-                title.className = 'text-lg font-bold mb-1 text-yellow-600';
-                desc.innerText = '목표 달성 시 스스로에게 줄 선물을 적어보세요.';
-                btn.className = 'bg-yellow-500 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-yellow-600 transition';
-                input.className = 'flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500';
-            }
-            
-            renderPRList();
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function renderPRList() {
-            const list = document.getElementById('pr-list');
-            list.innerHTML = '';
-            if (prData[currentPRType].length === 0) {
-                list.innerHTML = `<li class="text-center text-slate-400 py-4">등록된 내용이 없습니다.</li>`;
-                return;
-            }
-            prData[currentPRType].forEach((item, index) => {
-                const li = document.createElement('li');
-                li.className = `flex items-center gap-2 p-2 rounded-lg border transition ${item.checked ? 'bg-slate-50 border-slate-100' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`;
-                li.innerHTML = `
-                    <div class="flex flex-col items-center justify-center shrink-0">
-                        <button onclick="movePR(${index}, -1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === 0 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg></button>
-                        <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="togglePR(${index})" class="my-0.5 w-5 h-5 rounded border-slate-300 cursor-pointer ${currentPRType === 'penalty' ? 'accent-red-500' : 'accent-yellow-500'}">
-                        <button onclick="movePR(${index}, 1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === prData[currentPRType].length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
+                listEl.innerHTML += `
+                    <div class="flex items-center p-3 border border-gray-200 rounded-xl bg-white">
+                        <div class="flex flex-col items-center mr-3">
+                            <button onclick="moveItem(${type}List, ${i}, 'up', () => saveAndRenderPR('${type}'))" class="${upDisabled} text-lg leading-none p-1">▲</button>
+                            <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="togglePR('${type}', ${i})" class="w-5 h-5 text-blue-600 rounded my-1 border-gray-300">
+                            <button onclick="moveItem(${type}List, ${i}, 'down', () => saveAndRenderPR('${type}'))" class="${downDisabled} text-lg leading-none p-1">▼</button>
+                        </div>
+                        <span class="flex-1 text-gray-800 ${item.checked ? 'line-through text-gray-400' : ''}" onclick="editPR('${type}', ${i})">${item.text}</span>
+                        <button onclick="deletePR('${type}', ${i})" class="text-gray-400 p-2 ml-2">✕</button>
                     </div>
-                    <span class="flex-1 cursor-pointer hover:bg-slate-100 px-1 py-1 rounded transition break-all text-sm ${item.checked ? 'line-through text-slate-400' : 'text-slate-700'}" onclick="editPR(${index})" id="pr-text-${index}" title="클릭하여 수정">${item.text}</span>
-                    <button onclick="deletePR(${index})" class="p-2 text-slate-300 hover:text-red-500 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
                 `;
-                list.appendChild(li);
             });
         }
 
-        function movePR(index, direction) {
-            const arr = prData[currentPRType];
-            if (index + direction < 0 || index + direction >= arr.length) return;
-            const temp = arr[index];
-            arr[index] = arr[index + direction];
-            arr[index + direction] = temp;
-            renderPRList();
-            saveState();
-        }
-
-        function editPR(index) {
-            const span = document.getElementById(`pr-text-${index}`);
-            const currentText = prData[currentPRType][index].text;
-            span.outerHTML = `<input type="text" id="pr-edit-${index}" value="${currentText}" class="flex-1 border border-slate-400 rounded px-2 py-1 text-base focus:outline-none focus:ring-1 focus:ring-slate-400" onblur="savePR(${index})" onkeydown="if(event.key === 'Enter') savePR(${index})">`;
-            document.getElementById(`pr-edit-${index}`).focus();
-        }
-
-        function savePR(index) {
-            const input = document.getElementById(`pr-edit-${index}`);
-            if(input) {
-                const val = input.value.trim();
-                if(val) prData[currentPRType][index].text = val;
-                renderPRList();
-                saveState();
+        function editPR(type, index) {
+            const list = type === 'penalty' ? penaltyList : rewardList;
+            const newValue = prompt("내용을 수정하세요:", list[index].text);
+            if (newValue !== null && newValue.trim() !== '') {
+                list[index].text = newValue.trim();
+                saveAndRenderPR(type);
             }
         }
 
-        function addPR() {
-            const input = document.getElementById('pr-input');
-            const val = input.value.trim();
-            if(val) {
-                prData[currentPRType].push({ text: val, checked: false });
-                input.value = '';
-                renderPRList();
-                saveState();
-            }
+        function togglePR(type, index) {
+            const list = type === 'penalty' ? penaltyList : rewardList;
+            list[index].checked = !list[index].checked;
+            saveAndRenderPR(type);
         }
 
-        function togglePR(index) {
-            prData[currentPRType][index].checked = !prData[currentPRType][index].checked;
-            renderPRList();
-            saveState();
+        function deletePR(type, index) {
+            const list = type === 'penalty' ? penaltyList : rewardList;
+            list.splice(index, 1);
+            saveAndRenderPR(type);
         }
-
-        function deletePR(index) {
-            prData[currentPRType].splice(index, 1);
-            renderPRList();
-            saveState();
-        }
-
-        // --- Common Modal Close ---
-        function closeModal(id) {
-            const modal = document.getElementById(id);
-            modal.classList.remove('flex');
-            modal.classList.add('hidden');
-        }
-
-        // --- Initialize App ---
-        window.addEventListener('DOMContentLoaded', () => {
-            loadState(); // 로컬스토리지에서 데이터를 불러와 렌더링
-        });
-
     </script>
 </body>
 </html>
