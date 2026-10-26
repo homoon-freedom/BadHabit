@@ -140,7 +140,7 @@
             <button id="reset-btn" class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition duration-300 shrink-0">
                 흡연(리셋)
             </button>
-            <!-- 달력 버튼 추가 -->
+            <!-- 달력 버튼 -->
             <button onclick="openCalendarModal()" class="py-2.5 px-3 rounded-xl text-slate-600 bg-slate-100 hover:bg-slate-200 transition duration-300 shrink-0 flex items-center justify-center shadow-sm" title="흡연 기록 캘린더">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
             </button>
@@ -151,22 +151,17 @@
     <!-- Calendar Modal -->
     <div id="calendar-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform transition-transform duration-300 flex flex-col">
-            <!-- 달력 헤더 (월 이동) -->
             <div class="flex items-center justify-between mb-4">
                 <button onclick="changeMonth(-1)" class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition">&lt;</button>
                 <h3 id="calendar-title" class="text-lg font-bold text-slate-800">2026년 10월</h3>
                 <button onclick="changeMonth(1)" class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition">&gt;</button>
             </div>
 
-            <!-- 요일 헤더 -->
             <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-400 mb-2">
                 <span class="text-red-500">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="text-blue-500">토</span>
             </div>
 
-            <!-- 날짜 그리드 -->
-            <div id="calendar-grid" class="grid grid-cols-7 gap-1 mb-6 text-center text-sm">
-                <!-- 날짜 셀들이 동적으로 생성됩니다 -->
-            </div>
+            <div id="calendar-grid" class="grid grid-cols-7 gap-1 mb-6 text-center text-sm"></div>
 
             <p class="text-center text-xs text-slate-400 mb-4">날짜를 클릭하여 해당 일자의 흡연 횟수를 변경할 수 있습니다.</p>
 
@@ -198,29 +193,33 @@
                 <input type="text" id="pc-input" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="내용을 입력하세요...">
                 <button onclick="addProsCons()" id="pc-add-btn" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700">추가</button>
             </div>
-            <ul id="pc-list" class="flex-1 overflow-y-auto space-y-2 mb-6 text-sm text-slate-600">
-                <!-- Items go here -->
-            </ul>
+            <ul id="pc-list" class="flex-1 overflow-y-auto space-y-2 mb-6 text-sm text-slate-600"></ul>
             <button onclick="closeModal('pros-cons-modal')" class="w-full py-3 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition mt-auto shrink-0">
                 닫기
             </button>
         </div>
     </div>
 
-    <!-- Friction Modal -->
+    <!-- Friction Modal (회사 / 집 분리형) -->
     <div id="friction-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform transition-transform duration-300 flex flex-col h-[85vh]">
             <h3 class="text-lg font-bold mb-1 text-slate-800">나만의 금연 규칙 (욕구 대처법)</h3>
-            <p class="text-xs text-slate-500 mb-4">흡연 욕구가 올라올 때 <strong class="text-slate-700 font-bold underline">위에서부터 아래로 하나씩</strong> 순서대로 실행해보세요.</p>
-            <div class="flex gap-2 mb-4 shrink-0">
-                <input type="text" id="friction-input" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800" placeholder="예: 시원한 물 한 컵 마시기">
+            
+            <!-- 탭 버튼 (회사 / 집) -->
+            <div class="flex bg-slate-100 p-1 rounded-xl mb-3 shrink-0">
+                <button onclick="switchFrictionTab('office')" id="tab-office" class="flex-1 py-1.5 text-xs font-bold rounded-lg transition bg-white shadow-sm text-blue-600">🏢 회사</button>
+                <button onclick="switchFrictionTab('home')" id="tab-home" class="flex-1 py-1.5 text-xs font-bold rounded-lg transition text-slate-500">🏠 집</button>
+            </div>
+
+            <p id="friction-desc" class="text-xs text-slate-500 mb-3">🏢 회사에서 흡연 욕구가 올라올 때 순서대로 실행해보세요.</p>
+            
+            <div class="flex gap-2 mb-3 shrink-0">
+                <input type="text" id="friction-input" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800" placeholder="규칙 입력...">
                 <button onclick="addFriction()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-700">추가</button>
             </div>
             
-            <div class="flex-1 overflow-y-auto mb-6">
-                <ul id="friction-list" class="space-y-2 text-sm text-slate-700">
-                    <!-- Items go here -->
-                </ul>
+            <div class="flex-1 overflow-y-auto mb-4">
+                <ul id="friction-list" class="space-y-2 text-sm text-slate-700"></ul>
             </div>
             
             <div class="flex gap-2 mt-auto shrink-0">
@@ -244,12 +243,10 @@
                 <button onclick="addPR()" id="pr-add-btn" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-700">추가</button>
             </div>
             <div class="flex-1 overflow-y-auto mb-6">
-                <ul id="pr-list" class="space-y-2 text-sm text-slate-700">
-                    <!-- Items go here -->
-                </ul>
+                <ul id="pr-list" class="space-y-2 text-sm text-slate-700"></ul>
             </div>
             <button onclick="closeModal('pr-modal')" class="w-full py-3 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition mt-auto shrink-0">
-                확인 및 닫기
+                닫기
             </button>
         </div>
     </div>
@@ -264,12 +261,10 @@
                 <button onclick="addTrigger()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-700">추가</button>
             </div>
             <div class="flex-1 overflow-y-auto mb-6">
-                <ul id="trigger-list" class="space-y-2 text-sm text-slate-700">
-                    <!-- Items go here -->
-                </ul>
+                <ul id="trigger-list" class="space-y-2 text-sm text-slate-700"></ul>
             </div>
             <button onclick="closeModal('trigger-modal')" class="w-full py-3 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition mt-auto shrink-0">
-                확인 및 닫기
+                닫기
             </button>
         </div>
     </div>
@@ -279,12 +274,12 @@
         let streak = 0;
         let todayChecked = false;
         let lastCheckinDate = '';
-        let smokeRecords = {}; // 날짜별 흡연 횟수 기록 객체 { 'YYYY-MM-DD': count }
+        let smokeRecords = {}; 
         
         let currentPCType = 'pros';
         let currentPRType = 'penalty';
-        
-        // 캘린더용 현재 보고 있는 년/월
+        let currentFrictionTab = 'office'; // 'office' 또는 'home'
+
         let calendarYear = new Date().getFullYear();
         let calendarMonth = new Date().getMonth();
 
@@ -300,11 +295,17 @@
             { text: '술 마실 때', commitment: '이행장치 입력 (클릭하여 수정)', checked: false }
         ];
 
-        let frictionData = [
-            { text: '심호흡 크게 10번 하기', checked: false },
-            { text: '시원한 얼음물 한 컵 천천히 마시기', checked: false },
-            { text: '자리에서 일어나 3분간 걷거나 스트레칭', checked: false }
-        ];
+        // 회사 / 집 분리된 데이터 구조
+        let frictionData = {
+            office: [
+                { text: '사무실 자리에서 일어나 계단 오르내리기', checked: false },
+                { text: '시원한 물 한 잔 마시며 자리 환기하기', checked: false }
+            ],
+            home: [
+                { text: '베란다 대신 거실에서 스트레칭 하기', checked: false },
+                { text: '가족과 대화하며 주의 분산시키기', checked: false }
+            ]
+        };
 
         let prData = {
             penalty: [{ text: '배우자/친구에게 5만원 입금하기', checked: false }],
@@ -322,7 +323,6 @@
         const closeModalBtn = document.getElementById('close-modal-btn');
         const modalContent = document.getElementById('modal-content');
 
-        // --- Local Storage Functions ---
         const STORAGE_KEY = 'atomicHabitsQuitSmoking';
 
         function getTodayKey() {
@@ -359,7 +359,6 @@
                     lastCheckinDate = state.lastCheckinDate || '';
                     smokeRecords = state.smokeRecords || {};
                     
-                    // Daily Reset Check for main checkboxes
                     if (lastCheckinDate !== todayStr && state.todayChecked) {
                         todayChecked = false;
                         state.mainCheckboxes = [false, false, false, false];
@@ -369,7 +368,14 @@
 
                     if (state.pcData) pcData = state.pcData;
                     if (state.triggerData) triggerData = state.triggerData;
-                    if (state.frictionData) frictionData = state.frictionData;
+                    if (state.frictionData) {
+                        // 기존 배열 형태 데이터 호환 처리
+                        if (Array.isArray(state.frictionData)) {
+                            frictionData.office = state.frictionData;
+                        } else {
+                            frictionData = state.frictionData;
+                        }
+                    }
                     if (state.prData) prData = state.prData;
 
                     if (state.mainCheckboxes) {
@@ -392,8 +398,6 @@
             }
         }
 
-        // --- Core UI & Logic ---
-        
         function updateSmokeCountUI() {
             const todayKey = getTodayKey();
             const count = smokeRecords[todayKey] || 0;
@@ -418,6 +422,103 @@
                 btn.classList.add('scale-90');
                 setTimeout(() => btn.classList.remove('scale-90'), 150);
             }
+        }
+
+        // --- Friction Tab Logic ---
+        function switchFrictionTab(tab) {
+            currentFrictionTab = tab;
+            const tabOffice = document.getElementById('tab-office');
+            const tabHome = document.getElementById('tab-home');
+            const desc = document.getElementById('friction-desc');
+
+            if (tab === 'office') {
+                tabOffice.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition bg-white shadow-sm text-blue-600";
+                tabHome.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition text-slate-500";
+                desc.innerText = "🏢 회사에서 흡연 욕구가 올라올 때 순서대로 실행해보세요.";
+            } else {
+                tabHome.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition bg-white shadow-sm text-blue-600";
+                tabOffice.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition text-slate-500";
+                desc.innerText = "🏠 집에서 흡연 욕구가 올라올 때 순서대로 실행해보세요.";
+            }
+            renderFrictionList();
+        }
+
+        function openFrictionModal() {
+            const modal = document.getElementById('friction-modal');
+            switchFrictionTab('office'); // 기본값으로 열기
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function renderFrictionList() {
+            const list = document.getElementById('friction-list');
+            list.innerHTML = '';
+            const currentList = frictionData[currentFrictionTab];
+
+            currentList.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = `flex items-center gap-2 p-2 rounded-lg border transition ${item.checked ? 'bg-slate-50 border-slate-100' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`;
+                li.innerHTML = `
+                    <div class="flex flex-col items-center justify-center shrink-0">
+                        <button onclick="moveFriction(${index}, -1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === 0 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg></button>
+                        <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleFriction(${index})" class="my-0.5 w-5 h-5 rounded border-slate-300 accent-slate-800 cursor-pointer">
+                        <button onclick="moveFriction(${index}, 1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === currentList.length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
+                    </div>
+                    <span class="flex-1 cursor-pointer hover:bg-slate-100 px-1 py-1 rounded transition break-all text-sm ${item.checked ? 'line-through text-slate-400' : 'text-slate-700'}" onclick="editFriction(${index})" id="friction-text-${index}" title="클릭하여 수정">${item.text}</span>
+                    <button onclick="deleteFriction(${index})" class="p-2 text-slate-300 hover:text-red-500 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function moveFriction(index, direction) {
+            const arr = frictionData[currentFrictionTab];
+            if (index + direction < 0 || index + direction >= arr.length) return;
+            const temp = arr[index];
+            arr[index] = arr[index + direction];
+            arr[index + direction] = temp;
+            renderFrictionList();
+            saveState();
+        }
+
+        function editFriction(index) {
+            const span = document.getElementById(`friction-text-${index}`);
+            const currentText = frictionData[currentFrictionTab][index].text;
+            span.outerHTML = `<input type="text" id="friction-edit-${index}" value="${currentText}" class="flex-1 border border-slate-400 rounded px-2 py-1 text-base focus:outline-none focus:ring-1 focus:ring-slate-400" onblur="saveFriction(${index})" onkeydown="if(event.key === 'Enter') saveFriction(${index})">`;
+            document.getElementById(`friction-edit-${index}`).focus();
+        }
+
+        function saveFriction(index) {
+            const input = document.getElementById(`friction-edit-${index}`);
+            if(input) {
+                const val = input.value.trim();
+                if(val) frictionData[currentFrictionTab][index].text = val;
+                renderFrictionList();
+                saveState();
+            }
+        }
+
+        function addFriction() {
+            const input = document.getElementById('friction-input');
+            const val = input.value.trim();
+            if(val) {
+                frictionData[currentFrictionTab].push({ text: val, checked: false });
+                input.value = '';
+                renderFrictionList();
+                saveState();
+            }
+        }
+
+        function toggleFriction(index) {
+            frictionData[currentFrictionTab][index].checked = !frictionData[currentFrictionTab][index].checked;
+            renderFrictionList();
+            saveState();
+        }
+
+        function deleteFriction(index) {
+            frictionData[currentFrictionTab].splice(index, 1);
+            renderFrictionList();
+            saveState();
         }
 
         // --- Calendar Functions ---
@@ -450,13 +551,11 @@
             const firstDayIndex = new Date(calendarYear, calendarMonth, 1).getDay();
             const totalDays = new Date(calendarYear, calendarMonth + 1, 0).getDate();
 
-            // 공백 채우기
             for (let i = 0; i < firstDayIndex; i++) {
                 const emptyDiv = document.createElement('div');
                 grid.appendChild(emptyDiv);
             }
 
-            // 날짜 생성
             for (let day = 1; day <= totalDays; day++) {
                 const monthStr = String(calendarMonth + 1).padStart(2, '0');
                 const dayStr = String(day).padStart(2, '0');
@@ -755,82 +854,6 @@
             saveState();
         }
 
-        // --- Friction (Law 3) Modal ---
-        function openFrictionModal() {
-            const modal = document.getElementById('friction-modal');
-            renderFrictionList();
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function renderFrictionList() {
-            const list = document.getElementById('friction-list');
-            list.innerHTML = '';
-            frictionData.forEach((item, index) => {
-                const li = document.createElement('li');
-                li.className = `flex items-center gap-2 p-2 rounded-lg border transition ${item.checked ? 'bg-slate-50 border-slate-100' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`;
-                li.innerHTML = `
-                    <div class="flex flex-col items-center justify-center shrink-0">
-                        <button onclick="moveFriction(${index}, -1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === 0 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg></button>
-                        <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleFriction(${index})" class="my-0.5 w-5 h-5 rounded border-slate-300 accent-slate-800 cursor-pointer">
-                        <button onclick="moveFriction(${index}, 1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === frictionData.length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
-                    </div>
-                    <span class="flex-1 cursor-pointer hover:bg-slate-100 px-1 py-1 rounded transition break-all text-sm ${item.checked ? 'line-through text-slate-400' : 'text-slate-700'}" onclick="editFriction(${index})" id="friction-text-${index}" title="클릭하여 수정">${item.text}</span>
-                    <button onclick="deleteFriction(${index})" class="p-2 text-slate-300 hover:text-red-500 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-                `;
-                list.appendChild(li);
-            });
-        }
-
-        function moveFriction(index, direction) {
-            if (index + direction < 0 || index + direction >= frictionData.length) return;
-            const temp = frictionData[index];
-            frictionData[index] = frictionData[index + direction];
-            frictionData[index + direction] = temp;
-            renderFrictionList();
-            saveState();
-        }
-
-        function editFriction(index) {
-            const span = document.getElementById(`friction-text-${index}`);
-            const currentText = frictionData[index].text;
-            span.outerHTML = `<input type="text" id="friction-edit-${index}" value="${currentText}" class="flex-1 border border-slate-400 rounded px-2 py-1 text-base focus:outline-none focus:ring-1 focus:ring-slate-400" onblur="saveFriction(${index})" onkeydown="if(event.key === 'Enter') saveFriction(${index})">`;
-            document.getElementById(`friction-edit-${index}`).focus();
-        }
-
-        function saveFriction(index) {
-            const input = document.getElementById(`friction-edit-${index}`);
-            if(input) {
-                const val = input.value.trim();
-                if(val) frictionData[index].text = val;
-                renderFrictionList();
-                saveState();
-            }
-        }
-
-        function addFriction() {
-            const input = document.getElementById('friction-input');
-            const val = input.value.trim();
-            if(val) {
-                frictionData.push({ text: val, checked: false });
-                input.value = '';
-                renderFrictionList();
-                saveState();
-            }
-        }
-
-        function toggleFriction(index) {
-            frictionData[index].checked = !frictionData[index].checked;
-            renderFrictionList();
-            saveState();
-        }
-
-        function deleteFriction(index) {
-            frictionData.splice(index, 1);
-            renderFrictionList();
-            saveState();
-        }
-
         // --- Penalty/Reward (Law 4) Modal ---
         function openPRModal(type) {
             currentPRType = type;
@@ -939,7 +962,6 @@
             modal.classList.add('hidden');
         }
 
-        // --- Initialize App ---
         window.addEventListener('DOMContentLoaded', () => {
             loadState(); 
         });
