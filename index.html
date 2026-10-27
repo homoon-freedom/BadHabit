@@ -6,6 +6,11 @@
     <title>금연 습관 트래커</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+/* 전체 페이지에 모던하고 가독성 좋은 시스템 폰트 적용 */
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
         /* 커스텀 체크박스 스타일링 */
         input[type="checkbox"] {
             accent-color: #3b82f6; 
@@ -405,7 +410,7 @@
             const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
             const dayOfWeek = weekdays[now.getDay()];
             
-            todayDateDisplay.innerText = `(${year}년${month}월${date}일$ {dayOfWeek})`;
+            todayDateDisplay.innerText = `(${year}.${month}.${date} ${dayOfWeek}요일)`;
         }
 
         function saveState() {
