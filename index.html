@@ -55,7 +55,7 @@
             <div class="flex items-baseline justify-center gap-1">
                 <span id="streak-count" class="text-2xl font-black text-blue-600">0</span>
                 <span class="text-2xl font-bold text-slate-700">일째</span>
-                <!-- 오늘 흡연 횟수 표시 영역 -->
+                <!-- 오늘 흡연 횟 표시 영역 -->
                 <span id="today-smoke-display" class="text-lg font-bold text-red-500 ml-1 hidden">(0회)</span>
             </div>
             <div id="success-message" class="hidden mt-3 text-sm font-bold text-green-500 bg-green-50 py-2 rounded-lg">
@@ -70,7 +70,7 @@
                     <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                     일일 점검 리스트
                 </div>
-                <!-- 날짜 영역 (년도, 월, 일, 요일 / 상단 파란색 / 같은 크기) -->
+                <!-- 날짜 영역 -->
                 <span id="today-date-display" class="text-lg font-bold text-blue-600"></span>
             </h3>
             
@@ -149,34 +149,26 @@
             <button id="reset-btn" class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition duration-300 shrink-0">
                 흡연(리셋)
             </button>
-            <!-- 달력 버튼 -->
             <button onclick="openCalendarModal()" class="py-2.5 px-3 rounded-xl text-slate-600 bg-slate-100 hover:bg-slate-200 transition duration-300 shrink-0 flex items-center justify-center shadow-sm" title="흡연 기록 캘린더">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
             </button>
         </div>
-
     </div>
 
     <!-- Calendar Modal -->
     <div id="calendar-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4 py-6">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform transition-transform duration-300 flex flex-col h-[90vh] max-h-[850px]">
-            
             <div class="flex items-center justify-between mb-4 shrink-0">
                 <button onclick="changeMonth(-1)" class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition">&lt;</button>
                 <h3 id="calendar-title" class="text-lg font-bold text-slate-800">2026년 10월</h3>
                 <button onclick="changeMonth(1)" class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition">&gt;</button>
             </div>
-
             <div class="flex-1 overflow-y-auto pr-1 pb-2 space-y-4">
                 <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-400">
                     <span class="text-red-500">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="text-blue-500">토</span>
                 </div>
-
                 <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
-
                 <p class="text-center text-xs text-slate-400">달력의 날짜를 클릭하여 해당 일자의 흡연 타임라인을 확인하세요.</p>
-
-                <!-- 누적 상품권 영역 -->
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
                     <h4 class="text-sm font-normal text-slate-700 mb-3">🎟️ 누적된 벌칙 상품권</h4>
                     <div class="flex flex-col gap-2">
@@ -210,8 +202,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- 선택한 날짜 흡연 시간 및 간격 기록 영역 -->
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
                     <div class="flex items-center justify-between mb-2">
                         <h4 id="selected-date-title" class="text-sm font-normal text-slate-700">📅 당일 흡연 타임라인</h4>
@@ -223,9 +213,7 @@
                         </div>
                     </div>
                 </div>
-
             </div>
-
             <button onclick="closeModal('calendar-modal')" class="w-full py-3 mt-4 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition shrink-0">
                 닫기
             </button>
@@ -235,28 +223,28 @@
     <!-- Message Modal -->
     <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl transform scale-95 transition-transform duration-300" id="modal-content">
-            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-                🔄
-            </div>
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">🔄</div>
             <h3 class="text-xl font-bold mb-2 text-slate-800">기록이 초기화되었습니다</h3>
             <p class="text-slate-600 text-sm mb-6">실수할 수도 있습니다. 중요한 것은 포기하지 않고 다시 시작하는 것입니다. 당신은 여전히 비흡연자입니다!</p>
-            <button id="close-modal-btn" class="w-full py-3 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-700 transition">
-                다시 시작하기
-            </button>
+            <button id="close-modal-btn" class="w-full py-3 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-700 transition">다시 시작하기</button>
         </div>
     </div>
 
-    <!-- Pros & Cons Modal -->
+    <!-- Pros & Cons Modal (수정됨) -->
     <div id="pros-cons-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform transition-transform duration-300 flex flex-col h-[85vh]">
             <h3 id="pc-modal-title" class="text-lg font-bold mb-1 text-slate-800">장단점 기록</h3>
-            <p class="text-xs text-slate-500 mb-4">장단점을 확인하고 인지했다면 체크하세요.</p>
+            <p class="text-xs text-slate-500 mb-4">내용을 입력하고 추가하세요. 체크 후 글씨를 클릭하여 이행장치/개선점을 수정할 수 있습니다.</p>
             
             <div class="flex gap-2 mb-4 shrink-0">
-                <input type="text" id="pc-input" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="내용을 입력하세요...">
-                <button onclick="addProsCons()" id="pc-add-btn" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700">추가</button>
+                <input type="text" id="pc-input" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800" placeholder="내용 입력">
+                <button onclick="addPC()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-700 shrink-0 shadow-sm">추가</button>
             </div>
-            <ul id="pc-list" class="flex-1 overflow-y-auto space-y-2 mb-6 text-sm text-slate-600"></ul>
+            
+            <div class="flex-1 overflow-y-auto mb-6">
+                <ul id="pc-list" class="space-y-2 text-sm text-slate-600"></ul>
+            </div>
+            
             <button onclick="closeModal('pros-cons-modal')" class="w-full py-3 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition mt-auto shrink-0">
                 닫기
             </button>
@@ -267,30 +255,21 @@
     <div id="friction-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform transition-transform duration-300 flex flex-col h-[85vh]">
             <h3 class="text-lg font-bold mb-1 text-slate-800">나만의 금연 규칙 (욕구 대처법)</h3>
-            
             <div class="flex bg-slate-100 p-1 rounded-xl mb-3 shrink-0">
                 <button onclick="switchFrictionTab('office')" id="tab-office" class="flex-1 py-1.5 text-xs font-bold rounded-lg transition bg-white shadow-sm text-blue-600">🏢 회사</button>
                 <button onclick="switchFrictionTab('home')" id="tab-home" class="flex-1 py-1.5 text-xs font-bold rounded-lg transition text-slate-500">🏠 집</button>
             </div>
-
             <p id="friction-desc" class="text-xs text-slate-500 mb-3">🏢 회사에서 흡연 욕구가 올라올 때 순서대로 실행해보세요.</p>
-            
             <div class="flex gap-2 mb-3 shrink-0">
                 <input type="text" id="friction-input" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800" placeholder="규칙 입력...">
                 <button onclick="addFriction()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-700">추가</button>
             </div>
-            
             <div class="flex-1 overflow-y-auto mb-4">
                 <ul id="friction-list" class="space-y-2 text-sm text-slate-700"></ul>
             </div>
-            
             <div class="flex gap-2 mt-auto shrink-0">
-                <button onclick="closeModal('friction-modal')" class="flex-1 py-3 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition">
-                    확인 및 닫기
-                </button>
-                <button onclick="addSmokeCount(event)" class="w-14 py-3 bg-red-50 text-red-600 rounded-xl font-black text-xl hover:bg-red-100 transition border border-red-100 flex items-center justify-center" title="실패 시 흡연 횟수 추가 및 리셋">
-                    +
-                </button>
+                <button onclick="closeModal('friction-modal')" class="flex-1 py-3 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition">확인 및 닫기</button>
+                <button onclick="addSmokeCount(event)" class="w-14 py-3 bg-red-50 text-red-600 rounded-xl font-black text-xl hover:bg-red-100 transition border border-red-100 flex items-center justify-center" title="실패 시 흡연 횟수 추가 및 리셋">+</button>
             </div>
         </div>
     </div>
@@ -304,11 +283,9 @@
                 <input type="text" id="pr-input" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800" placeholder="내용 입력...">
                 <button onclick="addPR()" id="pr-add-btn" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-700">추가</button>
             </div>
-            
             <div class="flex-1 overflow-y-auto mb-4">
                 <ul id="pr-list" class="space-y-2 text-sm text-slate-700"></ul>
             </div>
-            
             <div id="coupon-section" class="mt-auto pt-4 border-t border-slate-100 hidden shrink-0 mb-4">
                 <h4 class="text-sm font-bold text-slate-700 mb-2">🎟️ 상품권 발행 (벌칙)</h4>
                 <div class="flex gap-2">
@@ -321,22 +298,21 @@
                     <button onclick="issueCoupon()" class="bg-red-50 text-red-600 px-4 py-2 rounded-xl text-sm font-bold border border-red-100 hover:bg-red-100 transition shadow-sm">발행</button>
                 </div>
             </div>
-
-            <button onclick="closeModal('pr-modal')" class="w-full py-3 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition shrink-0">
-                닫기
-            </button>
+            <button onclick="closeModal('pr-modal')" class="w-full py-3 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition shrink-0">닫기</button>
         </div>
     </div>
 
-    <!-- Trigger (Law 1) Modal -->
+    <!-- Trigger (Law 1) Modal (수정됨) -->
     <div id="trigger-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform transition-transform duration-300 flex flex-col h-[85vh]">
             <h3 class="text-lg font-bold mb-1 text-slate-800">흡연 유발 상황 (트리거)</h3>
-            <p class="text-xs text-slate-500 mb-4">담배 생각이 나는 상황을 적고, 이겨냈다면 체크하세요.</p>
+            <p class="text-xs text-slate-500 mb-4">상황을 입력하고 추가하세요. 체크 후 글씨를 클릭하여 이행장치를 수정할 수 있습니다.</p>
+            
             <div class="flex gap-2 mb-4 shrink-0">
-                <input type="text" id="trigger-input" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800" placeholder="예: 식사 직후, 스트레스 받을 때">
-                <button onclick="addTrigger()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-700">추가</button>
+                <input type="text" id="trigger-input" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800" placeholder="유발 상황 입력">
+                <button onclick="addTrigger()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-700 shrink-0 shadow-sm">추가</button>
             </div>
+            
             <div class="flex-1 overflow-y-auto mb-6">
                 <ul id="trigger-list" class="space-y-2 text-sm text-slate-700"></ul>
             </div>
@@ -362,13 +338,13 @@
         let calendarMonth = new Date().getMonth();
         let selectedDateKey = ''; 
 
-        // Default Data 
+        // Default Data (PC Data 구조에 afterText 속성 추가)
         let pcData = { 
             pros: [], 
             cons: [
-                { text: '돈이 낭비된다', checked: false },
-                { text: '건강이 악화된다', checked: false },
-                { text: '냄새가 난다', checked: false }
+                { text: '돈이 낭비된다', afterText: '돈이 절약된다', checked: false },
+                { text: '건강이 악화된다', afterText: '건강이 좋아진다', checked: false },
+                { text: '냄새가 난다', afterText: '좋은 향기가 난다', checked: false }
             ] 
         };
         
@@ -423,7 +399,6 @@
             const date = now.getDate();
             const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
             const dayOfWeek = weekdays[now.getDay()];
-            
             todayDateDisplay.innerText = `(${year}.${month}.${date} ${dayOfWeek}요일)`;
         }
 
@@ -468,8 +443,8 @@
                     if(state.coupons) coupons = state.coupons;
 
                     if (state.pcData) {
-                        pcData.pros = state.pcData.pros.map(item => typeof item === 'string' ? {text: item, checked: false} : item);
-                        pcData.cons = state.pcData.cons.map(item => typeof item === 'string' ? {text: item, checked: false} : item);
+                        pcData.pros = state.pcData.pros.map(item => typeof item === 'string' ? {text: item, afterText: '개선점 입력 (클릭하여 수정)', checked: false} : item);
+                        pcData.cons = state.pcData.cons.map(item => typeof item === 'string' ? {text: item, afterText: '개선점 입력 (클릭하여 수정)', checked: false} : item);
                     }
                     if (state.triggerData) triggerData = state.triggerData;
                     if (state.frictionData) {
@@ -597,14 +572,12 @@
             if (!smokeRecords[todayKey]) {
                 smokeRecords[todayKey] = [];
             }
-
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const timeString = `${hours}:${minutes}`;
 
             smokeRecords[todayKey].push(timeString);
-            
             frictionData.office.forEach(item => item.checked = false);
             frictionData.home.forEach(item => item.checked = false);
             
@@ -642,7 +615,6 @@
         function toggleTimelineVisibility() {
             const container = document.getElementById('smoke-timeline-container');
             const btn = document.getElementById('timeline-toggle-btn');
-            
             if (container.classList.contains('hidden')) {
                 container.classList.remove('hidden');
                 btn.innerText = '숨기기';
@@ -725,7 +697,6 @@
             records.forEach((time, index) => {
                 let intervalText = '';
                 let medalText = '';
-                
                 if (index > 0) {
                     const prevTime = records[index - 1];
                     if (prevTime.includes(':') && time.includes(':')) {
@@ -736,7 +707,6 @@
                         }
                     }
                 }
-
                 const div = document.createElement('div');
                 div.className = "flex items-center justify-between bg-white py-1.5 px-3 rounded-lg border border-slate-200 shadow-sm text-xs";
                 div.innerHTML = `
@@ -764,8 +734,7 @@
             const totalDays = new Date(calendarYear, calendarMonth + 1, 0).getDate();
 
             for (let i = 0; i < firstDayIndex; i++) {
-                const emptyDiv = document.createElement('div');
-                grid.appendChild(emptyDiv);
+                grid.appendChild(document.createElement('div'));
             }
 
             for (let day = 1; day <= totalDays; day++) {
@@ -816,12 +785,12 @@
             document.getElementById('cnt-massage').innerText = coupons.massage + '개';
         }
 
+        // --- 기타 법 3, 4 모달 함수들 ---
         function switchFrictionTab(tab) {
             currentFrictionTab = tab;
             const tabOffice = document.getElementById('tab-office');
             const tabHome = document.getElementById('tab-home');
             const desc = document.getElementById('friction-desc');
-
             if (tab === 'office') {
                 tabOffice.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition bg-white shadow-sm text-blue-600";
                 tabHome.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition text-slate-500";
@@ -936,7 +905,6 @@
                 input.className = 'flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500';
                 couponSec.classList.add('hidden'); 
             }
-            
             renderPRList();
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -1021,7 +989,6 @@
         function updateButtonState() {
             if (todayChecked) return;
             const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-            
             if (allChecked) {
                 checkinBtn.disabled = false;
                 checkinBtn.classList.remove('bg-slate-300', 'cursor-not-allowed');
@@ -1052,12 +1019,10 @@
 
         checkinBtn.addEventListener('click', () => {
             if (checkinBtn.disabled || todayChecked) return;
-            
             streak++;
             streakDisplay.innerText = streak;
             todayChecked = true;
             lastCheckinDate = new Date().toDateString();
-            
             setUIAsCheckedIn();
             saveState();
         });
@@ -1110,26 +1075,35 @@
             modal.classList.add('hidden');
         }
 
-        // --- Pros/Cons Modal ---
+        // --- Pros/Cons Modal 로직 ---
         function openProsConsModal(type) {
             currentPCType = type;
             const modal = document.getElementById('pros-cons-modal');
             const title = document.getElementById('pc-modal-title');
-            const btn = document.getElementById('pc-add-btn');
             
             if(type === 'pros') {
                 title.innerText = '👍 흡연의 장점 (정말 있을까요?)';
-                title.className = 'text-lg font-bold mb-4 text-blue-600';
-                btn.className = 'bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700';
+                title.className = 'text-lg font-bold mb-1 text-blue-600';
             } else {
                 title.innerText = '👎 흡연의 치명적인 단점';
-                title.className = 'text-lg font-bold mb-4 text-red-600';
-                btn.className = 'bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-700';
+                title.className = 'text-lg font-bold mb-1 text-red-600';
             }
-            
             renderPCList();
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+        }
+
+        function addPC() {
+            const input = document.getElementById('pc-input');
+            const val = input.value.trim();
+            
+            if(val) {
+                pcData[currentPCType].push({ text: val, afterText: '개선점 입력 (클릭하여 수정)', checked: false });
+                input.value = '';
+                renderPCList();
+                checkLaw2Status();
+                saveState();
+            }
         }
 
         function renderPCList() {
@@ -1143,12 +1117,15 @@
                 const li = document.createElement('li');
                 li.className = `flex items-center gap-2 p-2 rounded-lg border transition ${item.checked ? 'bg-slate-50 border-slate-100' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`;
                 
-                // 장단점 항목 글씨 색상 조건 분기 (취소선 기능 제거)
-                let textClass = '';
-                if (currentPCType === 'pros') {
-                    textClass = item.checked ? 'text-red-500' : 'text-green-600';
+                let textContent = '';
+                if (item.checked) {
+                    // 체크 시 장점(개선점) 표시
+                    let colorClass = currentPCType === 'pros' ? 'text-red-500' : 'text-blue-500';
+                    textContent = `<span class="cursor-pointer hover:bg-blue-50 px-1 py-0.5 rounded transition break-all text-sm ${colorClass} font-medium" onclick="editPCAfter(${index})" id="pc-aftertext-${index}" title="클릭하여 수정">${item.afterText || '개선점 입력 (클릭하여 수정)'}</span>`;
                 } else {
-                    textClass = item.checked ? 'text-green-600' : 'text-red-500';
+                    // 미체크 시 단점 표시
+                    let colorClass = currentPCType === 'pros' ? 'text-blue-500' : 'text-red-500';
+                    textContent = `<span class="cursor-pointer hover:bg-red-50 px-1 py-0.5 rounded transition break-all text-sm ${colorClass} font-medium" onclick="editPC(${index})" id="pc-text-${index}" title="클릭하여 수정">${item.text}</span>`;
                 }
 
                 li.innerHTML = `
@@ -1157,7 +1134,9 @@
                         <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="togglePC(${index})" class="my-0.5 w-5 h-5 rounded border-slate-300 accent-slate-800 cursor-pointer">
                         <button onclick="movePC(${index}, 1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === pcData[currentPCType].length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
                     </div>
-                    <span class="flex-1 cursor-pointer hover:bg-slate-100 px-1 py-1 rounded transition break-all text-sm font-medium ${textClass}" onclick="editPC(${index})" id="pc-text-${index}" title="클릭하여 수정">${item.text}</span> 
+                    <div class="flex-1 flex flex-col min-w-0 px-1 gap-1 justify-center">
+                        ${textContent}
+                    </div>
                     <button onclick="deletePC(${index})" class="p-2 text-slate-300 hover:text-red-500 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>`;
                 list.appendChild(li);
             });
@@ -1176,7 +1155,7 @@
         function editPC(index) {
             const span = document.getElementById(`pc-text-${index}`);
             const currentText = pcData[currentPCType][index].text;
-            span.outerHTML = `<input type="text" id="pc-edit-${index}" value="${currentText}" class="flex-1 border border-slate-400 rounded px-2 py-1 text-base focus:outline-none focus:ring-1 focus:ring-slate-400" onblur="savePC(${index})" onkeydown="if(event.key === 'Enter') savePC(${index})">`;
+            span.outerHTML = `<input type="text" id="pc-edit-${index}" value="${currentText}" class="flex-1 border border-red-300 rounded px-2 py-1 text-sm text-red-600 focus:outline-none focus:ring-1 focus:ring-red-400 w-full" onblur="savePC(${index})" onkeydown="if(event.key === 'Enter') savePC(${index})">`;
             document.getElementById(`pc-edit-${index}`).focus();
         }
 
@@ -1190,14 +1169,22 @@
             }
         }
 
-        function addProsCons() {
-            const input = document.getElementById('pc-input');
-            const val = input.value.trim();
-            if(val) {
-                pcData[currentPCType].push({ text: val, checked: false });
-                input.value = '';
+        function editPCAfter(index) {
+            const span = document.getElementById(`pc-aftertext-${index}`);
+            const currentText = pcData[currentPCType][index].afterText || '';
+            const placeholder = '개선점 입력 (클릭하여 수정)';
+            const val = (currentText === placeholder) ? '' : currentText;
+            
+            span.outerHTML = `<input type="text" id="pc-afteredit-${index}" value="${val}" placeholder="개선점 입력..." class="flex-1 border border-blue-300 rounded px-2 py-1 text-sm text-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-400 w-full bg-white shadow-inner" onblur="savePCAfter(${index})" onkeydown="if(event.key === 'Enter') savePCAfter(${index})">`;
+            document.getElementById(`pc-afteredit-${index}`).focus();
+        }
+
+        function savePCAfter(index) {
+            const input = document.getElementById(`pc-afteredit-${index}`);
+            if(input) {
+                const val = input.value.trim();
+                pcData[currentPCType][index].afterText = val ? val : '개선점 입력 (클릭하여 수정)';
                 renderPCList();
-                checkLaw2Status();
                 saveState();
             }
         }
@@ -1216,12 +1203,25 @@
             saveState();
         }
 
-        // --- Trigger (Law 1) Modal Functions ---
+        // --- Trigger (Law 1) Modal 로직 ---
         function openTriggerModal() {
             const modal = document.getElementById('trigger-modal');
             renderTriggerList();
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+        }
+
+        function addTrigger() {
+            const input = document.getElementById('trigger-input');
+            const val = input.value.trim();
+            
+            if(val) {
+                triggerData.push({ text: val, commitment: '이행장치 입력 (클릭하여 수정)', checked: false });
+                input.value = '';
+                renderTriggerList();
+                checkLaw1Status(); 
+                saveState();
+            }
         }
 
         function renderTriggerList() {
@@ -1230,15 +1230,22 @@
             triggerData.forEach((item, index) => {
                 const li = document.createElement('li');
                 li.className = `flex items-center gap-2 p-2 rounded-lg border transition ${item.checked ? 'bg-slate-50 border-slate-100' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`;
+                
+                let textContent = '';
+                if (item.checked) {
+                    textContent = `<span class="cursor-pointer hover:bg-blue-50 px-1 py-0.5 rounded transition break-all text-sm text-blue-500 font-medium" onclick="editCommitment(${index})" id="commitment-text-${index}" title="이행장치 클릭하여 수정">${item.commitment || '이행장치 입력 (클릭하여 수정)'}</span>`;
+                } else {
+                    textContent = `<span class="cursor-pointer hover:bg-red-50 px-1 py-0.5 rounded transition break-all text-sm text-slate-700 font-medium" onclick="editTrigger(${index})" id="trigger-text-${index}" title="상황 클릭하여 수정">${item.text}</span>`;
+                }
+
                 li.innerHTML = `
                     <div class="flex flex-col items-center justify-center shrink-0">
                         <button onclick="moveTrigger(${index}, -1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === 0 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg></button>
                         <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleTrigger(${index})" class="my-0.5 w-5 h-5 rounded border-slate-300 accent-slate-800 cursor-pointer">
                         <button onclick="moveTrigger(${index}, 1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === triggerData.length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
                     </div>
-                    <div class="flex-1 flex flex-col min-w-0 px-1 gap-1">
-                        <span class="cursor-pointer hover:bg-slate-100 px-1 py-0.5 rounded transition break-all text-sm ${item.checked ? 'line-through text-slate-400' : 'text-slate-700'}" onclick="editTrigger(${index})" id="trigger-text-${index}" title="상황 클릭하여 수정">${item.text}</span>
-                        <span class="cursor-pointer hover:bg-orange-50 px-1 py-0.5 rounded transition break-all text-sm text-orange-500 font-medium" onclick="editCommitment(${index})" id="commitment-text-${index}" title="이행장치 클릭하여 수정">${item.commitment || '이행장치 입력 (클릭하여 수정)'}</span>
+                    <div class="flex-1 flex flex-col min-w-0 px-1 gap-1 justify-center">
+                        ${textContent}
                     </div>
                     <button onclick="deleteTrigger(${index})" class="p-2 text-slate-300 hover:text-red-500 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
                 `;
@@ -1258,7 +1265,7 @@
         function editTrigger(index) {
             const span = document.getElementById(`trigger-text-${index}`);
             const currentText = triggerData[index].text;
-            span.outerHTML = `<input type="text" id="trigger-edit-${index}" value="${currentText}" class="flex-1 border border-slate-400 rounded px-2 py-1 text-base focus:outline-none focus:ring-1 focus:ring-slate-400" onblur="saveTrigger(${index})" onkeydown="if(event.key === 'Enter') saveTrigger(${index})">`;
+            span.outerHTML = `<input type="text" id="trigger-edit-${index}" value="${currentText}" class="flex-1 border border-slate-400 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-slate-400 w-full" onblur="saveTrigger(${index})" onkeydown="if(event.key === 'Enter') saveTrigger(${index})">`;
             document.getElementById(`trigger-edit-${index}`).focus();
         }
 
@@ -1278,7 +1285,7 @@
             const placeholder = '이행장치 입력 (클릭하여 수정)';
             const val = (currentText === placeholder) ? '' : currentText;
             
-            span.outerHTML = `<input type="text" id="commitment-edit-${index}" value="${val}" placeholder="이행장치 입력..." class="border border-orange-300 rounded px-2 py-1 text-base text-orange-600 focus:outline-none focus:ring-1 focus:ring-orange-400 w-full bg-white shadow-inner" onblur="saveCommitment(${index})" onkeydown="if(event.key === 'Enter') saveCommitment(${index})">`;
+            span.outerHTML = `<input type="text" id="commitment-edit-${index}" value="${val}" placeholder="이행장치 입력..." class="border border-blue-300 rounded px-2 py-1 text-sm text-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-400 w-full bg-white shadow-inner" onblur="saveCommitment(${index})" onkeydown="if(event.key === 'Enter') saveCommitment(${index})">`;
             document.getElementById(`commitment-edit-${index}`).focus();
         }
 
@@ -1288,18 +1295,6 @@
                 const val = input.value.trim();
                 triggerData[index].commitment = val ? val : '이행장치 입력 (클릭하여 수정)';
                 renderTriggerList();
-                saveState();
-            }
-        }
-
-        function addTrigger() {
-            const input = document.getElementById('trigger-input');
-            const val = input.value.trim();
-            if(val) {
-                triggerData.push({ text: val, commitment: '이행장치 입력 (클릭하여 수정)', checked: false });
-                input.value = '';
-                renderTriggerList();
-                checkLaw1Status(); 
                 saveState();
             }
         }
