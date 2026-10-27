@@ -572,7 +572,6 @@
             const isPenaltyComplete = penalties.length > 0 && penalties.every(item => item.checked);
             const isRewardComplete = rewards.length > 0 && rewards.every(item => item.checked);
 
-            // 둘 중 하나라도 모두 체크되어 있다면 true
             if (isPenaltyComplete || isRewardComplete) {
                 law4Checkbox.checked = true;
             } else {
@@ -697,13 +696,12 @@
                 intervalStr = `${minutes}분`;
             }
 
-            // 메달 판정 (시간 기준)
             let medal = '';
-            if (diffMin >= 360) { // 6시간 이상
+            if (diffMin >= 360) {
                 medal = '🥇 금메달';
-            } else if (diffMin >= 240) { // 4시간 이상
+            } else if (diffMin >= 240) {
                 medal = '🥈 은메달';
-            } else if (diffMin >= 120) { // 2시간 이상
+            } else if (diffMin >= 120) {
                 medal = '🥉 동메달';
             }
 
@@ -1144,13 +1142,22 @@
             pcData[currentPCType].forEach((item, index) => {
                 const li = document.createElement('li');
                 li.className = `flex items-center gap-2 p-2 rounded-lg border transition ${item.checked ? 'bg-slate-50 border-slate-100' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`;
+                
+                // 장단점 항목 글씨 색상 조건 분기 (취소선 기능 제거)
+                let textClass = '';
+                if (currentPCType === 'pros') {
+                    textClass = item.checked ? 'text-red-500' : 'text-green-600';
+                } else {
+                    textClass = item.checked ? 'text-green-600' : 'text-red-500';
+                }
+
                 li.innerHTML = `
                     <div class="flex flex-col items-center justify-center shrink-0">
                         <button onclick="movePC(${index}, -1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === 0 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg></button>
                         <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="togglePC(${index})" class="my-0.5 w-5 h-5 rounded border-slate-300 accent-slate-800 cursor-pointer">
                         <button onclick="movePC(${index}, 1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === pcData[currentPCType].length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
                     </div>
-                    <span class="flex-1 cursor-pointer hover:bg-slate-100 px-1 py-1 rounded transition break-all text-sm ${item.checked ? 'line-through text-slate-400' : 'text-slate-700'}" onclick="editPC(${index})" id="pc-text-${index}" title="클릭하여 수정">${item.text}</span> 
+                    <span class="flex-1 cursor-pointer hover:bg-slate-100 px-1 py-1 rounded transition break-all text-sm font-medium ${textClass}" onclick="editPC(${index})" id="pc-text-${index}" title="클릭하여 수정">${item.text}</span> 
                     <button onclick="deletePC(${index})" class="p-2 text-slate-300 hover:text-red-500 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>`;
                 list.appendChild(li);
             });
