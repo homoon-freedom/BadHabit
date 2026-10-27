@@ -60,21 +60,25 @@
 
         <!-- 4 Laws Checklist -->
         <div class="px-6 py-3">
-            <h3 class="text-lg font-bold mb-3 flex items-center gap-2">
-                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                일일 점검 리스트
+            <h3 class="text-lg font-bold mb-3 flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                    일일 점검 리스트
+                </div>
+                <!-- 요청하신 스타일이 적용된 날짜 영역 (년도, 월, 일, 요일 / 상단 파란색 / 같은 크기) -->
+                <span id="today-date-display" class="text-lg font-bold text-blue-600"></span>
             </h3>
             
             <div class="space-y-1">
-                <!-- Law 1 -->
+                <!-- Law 1 (수동 체크 불가 / 모달 연동) -->
                 <div class="p-2 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-200">
-                    <label class="flex items-start gap-3 cursor-pointer">
-                        <input type="checkbox" class="habit-checkbox mt-1 w-5 h-5 rounded border-slate-300">
+                    <div class="flex items-start gap-3">
+                        <input type="checkbox" id="law1-checkbox" onclick="return false;" class="habit-checkbox mt-1 w-5 h-5 rounded border-slate-300 cursor-not-allowed">
                         <div class="flex-1">
                             <p class="font-bold text-slate-700">보이지 않게 만들기</p>
-                            <p class="text-xs text-slate-500 mt-1">담배, 라이터 등 흡연 유발 환경을 모두 제거했는가?</p>
+                            <p class="text-xs text-slate-500 mt-1">담배, 라이터 등 흡연 유발 환경을 모두 제거했는가? <br><span class="text-blue-500 font-medium">(하단 상황 기록 모두 체크 시 자동 완료)</span></p>
                         </div>
-                    </label>
+                    </div>
                     <div class="mt-3 ml-8">
                         <button onclick="openTriggerModal()" class="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-200 transition flex items-center gap-1 shadow-sm">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
@@ -83,15 +87,15 @@
                     </div>
                 </div>
 
-                <!-- Law 2 -->
+                <!-- Law 2 (수동 체크 불가 / 장단점 모달 연동) -->
                 <div class="p-2 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-200">
-                    <label class="flex items-start gap-3 cursor-pointer">
-                        <input type="checkbox" class="habit-checkbox mt-1 w-5 h-5 rounded border-slate-300">
+                    <div class="flex items-start gap-3">
+                        <input type="checkbox" id="law2-checkbox" onclick="return false;" class="habit-checkbox mt-1 w-5 h-5 rounded border-slate-300 cursor-not-allowed">
                         <div class="flex-1">
                             <p class="font-bold text-slate-700">매력적이지 않게 만들기</p>
-                            <p class="text-xs text-slate-500 mt-1">금연의 장점을 상기하고 '비흡연자'로서의 정체성을 다졌는가?</p>
+                            <p class="text-xs text-slate-500 mt-1">금연의 장점을 상기하고 '비흡연자'로서의 정체성을 다졌는가? <br><span class="text-blue-500 font-medium">(장단점 기록 모두 체크 시 자동 완료)</span></p>
                         </div>
-                    </label>
+                    </div>
                     <div class="mt-3 ml-8 flex gap-2">
                         <button onclick="openProsConsModal('pros')" class="text-xs bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg border border-blue-200 hover:bg-blue-100 transition shadow-sm">👍 좋아요 (장점)</button>
                         <button onclick="openProsConsModal('cons')" class="text-xs bg-red-50 text-red-700 px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition shadow-sm">👎 나빠요 (단점)</button>
@@ -115,15 +119,15 @@
                     </div>
                 </div>
 
-                <!-- Law 4 -->
+                <!-- Law 4 (수동 체크 불가 / 패널티 및 보상 모달 연동) -->
                 <div class="p-2 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-200">
-                    <label class="flex items-start gap-3 cursor-pointer">
-                        <input type="checkbox" class="habit-checkbox mt-1 w-5 h-5 rounded border-slate-300">
+                    <div class="flex items-start gap-3">
+                        <input type="checkbox" id="law4-checkbox" onclick="return false;" class="habit-checkbox mt-1 w-5 h-5 rounded border-slate-300 cursor-not-allowed">
                         <div class="flex-1">
                             <p class="font-bold text-slate-700">불만족스럽게 만들기</p>
-                            <p class="text-xs text-slate-500 mt-1">흡연 시의 패널티(벌금 등)를 기억하고 주변에 금연 사실을 알렸는가?</p>
+                            <p class="text-xs text-slate-500 mt-1">흡연 시의 패널티(벌금 등)를 기억하고 주변에 금연 사실을 알렸는가? <br><span class="text-blue-500 font-medium">(패널티 및 보상 모두 체크 시 자동 완료)</span></p>
                         </div>
-                    </label>
+                    </div>
                     <div class="mt-3 ml-8 flex gap-2">
                         <button onclick="openPRModal('penalty')" class="text-xs bg-red-50 text-red-700 px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition shadow-sm">💸 패널티 (흡연 시)</button>
                         <button onclick="openPRModal('reward')" class="text-xs bg-yellow-50 text-yellow-700 px-3 py-1.5 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition shadow-sm">🎁 보상 (금연 시)</button>
@@ -148,35 +152,29 @@
 
     </div>
 
-    <!-- Calendar Modal (스크롤 추가 및 1줄씩 4줄로 수정됨) -->
+    <!-- Calendar Modal -->
     <div id="calendar-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4 py-6">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform transition-transform duration-300 flex flex-col h-[90vh] max-h-[850px]">
             
-            <!-- 상단 헤더 (고정) -->
             <div class="flex items-center justify-between mb-4 shrink-0">
                 <button onclick="changeMonth(-1)" class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition">&lt;</button>
                 <h3 id="calendar-title" class="text-lg font-bold text-slate-800">2026년 10월</h3>
                 <button onclick="changeMonth(1)" class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition">&gt;</button>
             </div>
 
-            <!-- 스크롤 가능한 콘텐츠 영역 -->
             <div class="flex-1 overflow-y-auto pr-1 pb-2 space-y-4">
-                
-                <!-- 요일 헤더 -->
                 <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-400">
                     <span class="text-red-500">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="text-blue-500">토</span>
                 </div>
 
-                <!-- 날짜 그리드 -->
                 <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
 
                 <p class="text-center text-xs text-slate-400">날짜를 클릭하여 해당 일자의 흡연 횟수를 변경할 수 있습니다.</p>
 
-                <!-- 누적 상품권 영역 (1줄에 1개씩 총 4줄) -->
+                <!-- 누적 상품권 영역 -->
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
                     <h4 class="text-sm font-bold text-slate-700 mb-3">🎟️ 누적된 벌칙 상품권</h4>
                     <div class="flex flex-col gap-2">
-                        <!-- 설거지 -->
                         <div class="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
                             <span class="text-sm font-bold text-slate-600">🍽️ 설거지</span>
                             <div class="flex items-center gap-3">
@@ -184,7 +182,6 @@
                                 <button onclick="useCoupon('dish')" class="bg-slate-100 text-slate-500 px-3 py-1.5 rounded-md text-xs font-bold hover:bg-slate-200 transition">사용</button>
                             </div>
                         </div>
-                        <!-- 빨래 -->
                         <div class="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
                             <span class="text-sm font-bold text-slate-600">👕 빨래</span>
                             <div class="flex items-center gap-3">
@@ -192,7 +189,6 @@
                                 <button onclick="useCoupon('laundry')" class="bg-slate-100 text-slate-500 px-3 py-1.5 rounded-md text-xs font-bold hover:bg-slate-200 transition">사용</button>
                             </div>
                         </div>
-                        <!-- 청소 -->
                         <div class="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
                             <span class="text-sm font-bold text-slate-600">🧹 청소</span>
                             <div class="flex items-center gap-3">
@@ -200,7 +196,6 @@
                                 <button onclick="useCoupon('clean')" class="bg-slate-100 text-slate-500 px-3 py-1.5 rounded-md text-xs font-bold hover:bg-slate-200 transition">사용</button>
                             </div>
                         </div>
-                        <!-- 마사지 -->
                         <div class="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
                             <span class="text-sm font-bold text-slate-600">💆 마사지</span>
                             <div class="flex items-center gap-3">
@@ -210,18 +205,15 @@
                         </div>
                     </div>
                 </div>
-
             </div>
-            <!-- 스크롤 영역 끝 -->
 
-            <!-- 닫기 버튼 (고정) -->
             <button onclick="closeModal('calendar-modal')" class="w-full py-3 mt-4 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition shrink-0">
                 닫기
             </button>
         </div>
     </div>
 
-    <!-- Message Modal (Replaces alert) -->
+    <!-- Message Modal -->
     <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl transform scale-95 transition-transform duration-300" id="modal-content">
             <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
@@ -238,7 +230,9 @@
     <!-- Pros & Cons Modal -->
     <div id="pros-cons-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 px-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform transition-transform duration-300 flex flex-col h-[85vh]">
-            <h3 id="pc-modal-title" class="text-lg font-bold mb-4 text-slate-800">장단점 기록</h3>
+            <h3 id="pc-modal-title" class="text-lg font-bold mb-1 text-slate-800">장단점 기록</h3>
+            <p class="text-xs text-slate-500 mb-4">장단점을 확인하고 인지했다면 체크하세요.</p>
+            
             <div class="flex gap-2 mb-4 shrink-0">
                 <input type="text" id="pc-input" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="내용을 입력하세요...">
                 <button onclick="addProsCons()" id="pc-add-btn" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700">추가</button>
@@ -275,7 +269,7 @@
                 <button onclick="closeModal('friction-modal')" class="flex-1 py-3 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition">
                     확인 및 닫기
                 </button>
-                <button onclick="addSmokeCount(event)" class="w-14 py-3 bg-red-50 text-red-600 rounded-xl font-black text-xl hover:bg-red-100 transition border border-red-100 flex items-center justify-center" title="실패 시 흡연 횟수 추가">
+                <button onclick="addSmokeCount(event)" class="w-14 py-3 bg-red-50 text-red-600 rounded-xl font-black text-xl hover:bg-red-100 transition border border-red-100 flex items-center justify-center" title="실패 시 흡연 횟수 추가 및 리셋">
                     +
                 </button>
             </div>
@@ -296,7 +290,6 @@
                 <ul id="pr-list" class="space-y-2 text-sm text-slate-700"></ul>
             </div>
             
-            <!-- 상품권 발급 영역 -->
             <div id="coupon-section" class="mt-auto pt-4 border-t border-slate-100 hidden shrink-0 mb-4">
                 <h4 class="text-sm font-bold text-slate-700 mb-2">🎟️ 상품권 발행 (벌칙)</h4>
                 <div class="flex gap-2">
@@ -349,10 +342,14 @@
         let calendarYear = new Date().getFullYear();
         let calendarMonth = new Date().getMonth();
 
-        // Default Data
+        // Default Data 
         let pcData = { 
             pros: [], 
-            cons: ['돈이 낭비된다', '건강이 악화된다', '냄새가 난다'] 
+            cons: [
+                { text: '돈이 낭비된다', checked: false },
+                { text: '건강이 악화된다', checked: false },
+                { text: '냄새가 난다', checked: false }
+            ] 
         };
         
         let triggerData = [
@@ -380,13 +377,14 @@
         // DOM Elements
         const streakDisplay = document.getElementById('streak-count');
         const todaySmokeDisplay = document.getElementById('today-smoke-display');
-        const checkboxes = document.querySelectorAll('.habit-checkbox');
+        const checkboxes = document.querySelectorAll('.habit-checkbox'); 
         const checkinBtn = document.getElementById('checkin-btn');
         const resetBtn = document.getElementById('reset-btn');
         const successMessage = document.getElementById('success-message');
         const modal = document.getElementById('modal');
         const closeModalBtn = document.getElementById('close-modal-btn');
         const modalContent = document.getElementById('modal-content');
+        const todayDateDisplay = document.getElementById('today-date-display');
 
         const STORAGE_KEY = 'atomicHabitsQuitSmoking';
 
@@ -396,6 +394,18 @@
             const month = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
+        }
+
+        // 오늘 날짜 UI에 표시 (년도, 월, 일, 요일 형식)
+        function displayTodayDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const date = now.getDate();
+            const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+            const dayOfWeek = weekdays[now.getDay()];
+            
+            todayDateDisplay.innerText = `(${year}년 ${month}월 ${date}일 ${dayOfWeek}요일)`;
         }
 
         function saveState() {
@@ -425,15 +435,11 @@
                     lastCheckinDate = state.lastCheckinDate || '';
                     smokeRecords = state.smokeRecords || {};
                     if(state.coupons) coupons = state.coupons;
-                    
-                    if (lastCheckinDate !== todayStr && state.todayChecked) {
-                        todayChecked = false;
-                        state.mainCheckboxes = [false, false, false, false];
-                    } else {
-                        todayChecked = state.todayChecked || false;
-                    }
 
-                    if (state.pcData) pcData = state.pcData;
+                    if (state.pcData) {
+                        pcData.pros = state.pcData.pros.map(item => typeof item === 'string' ? {text: item, checked: false} : item);
+                        pcData.cons = state.pcData.cons.map(item => typeof item === 'string' ? {text: item, checked: false} : item);
+                    }
                     if (state.triggerData) triggerData = state.triggerData;
                     if (state.frictionData) {
                         if (Array.isArray(state.frictionData)) {
@@ -449,19 +455,94 @@
                             cb.checked = state.mainCheckboxes[i];
                         });
                     }
+
+                    todayChecked = state.todayChecked || false;
+
+                    // 날짜가 바뀌었을 경우 모든 체크 상태 초기화
+                    if (lastCheckinDate !== todayStr) {
+                        todayChecked = false;
+                        
+                        checkboxes.forEach(cb => {
+                            cb.checked = false;
+                            cb.disabled = false;
+                        });
+                        
+                        triggerData.forEach(t => t.checked = false);
+                        pcData.pros.forEach(p => p.checked = false);
+                        pcData.cons.forEach(c => c.checked = false);
+                        frictionData.office.forEach(f => f.checked = false);
+                        frictionData.home.forEach(f => f.checked = false);
+                        prData.penalty.forEach(p => p.checked = false);
+                        prData.reward.forEach(r => r.checked = false);
+
+                        lastCheckinDate = todayStr;
+                        saveState();
+                    }
                 } catch (e) {
                     console.error("Error parsing local storage data", e);
                 }
+            } else {
+                lastCheckinDate = todayStr;
             }
 
             streakDisplay.innerText = streak;
             updateSmokeCountUI();
+            displayTodayDate();
+
+            checkLaw1Status();
+            checkLaw2Status();
+            checkLaw4Status();
 
             if (todayChecked) {
                 setUIAsCheckedIn();
             } else {
                 updateButtonState();
             }
+        }
+
+        window.addEventListener('focus', () => {
+            const todayStr = new Date().toDateString();
+            if (lastCheckinDate && lastCheckinDate !== todayStr) {
+                loadState();
+            }
+        });
+
+        function checkLaw1Status() {
+            const law1Checkbox = document.getElementById('law1-checkbox');
+            if (!law1Checkbox) return;
+
+            if (triggerData.length > 0 && triggerData.every(item => item.checked)) {
+                law1Checkbox.checked = true;
+            } else {
+                law1Checkbox.checked = false;
+            }
+            updateButtonState();
+        }
+
+        function checkLaw2Status() {
+            const law2Checkbox = document.getElementById('law2-checkbox');
+            if (!law2Checkbox) return;
+
+            const allItems = [...pcData.pros, ...pcData.cons];
+            if (allItems.length > 0 && allItems.every(item => item.checked)) {
+                law2Checkbox.checked = true;
+            } else {
+                law2Checkbox.checked = false;
+            }
+            updateButtonState();
+        }
+
+        function checkLaw4Status() {
+            const law4Checkbox = document.getElementById('law4-checkbox');
+            if (!law4Checkbox) return;
+
+            const allItems = [...prData.penalty, ...prData.reward];
+            if (allItems.length > 0 && allItems.every(item => item.checked)) {
+                law4Checkbox.checked = true;
+            } else {
+                law4Checkbox.checked = false;
+            }
+            updateButtonState();
         }
 
         function updateSmokeCountUI() {
@@ -479,6 +560,11 @@
             const todayKey = getTodayKey();
             smokeRecords[todayKey] = (smokeRecords[todayKey] || 0) + 1;
             
+            frictionData.office.forEach(item => item.checked = false);
+            frictionData.home.forEach(item => item.checked = false);
+            
+            renderFrictionList();
+            
             updateSmokeCountUI();
             lastCheckinDate = new Date().toDateString(); 
             saveState();
@@ -490,7 +576,6 @@
             }
         }
 
-        // --- Coupon Logic ---
         function issueCoupon() {
             const type = document.getElementById('coupon-select').value;
             coupons[type]++;
@@ -506,7 +591,6 @@
             }
         }
 
-        // --- Calendar Functions ---
         function openCalendarModal() {
             const modal = document.getElementById('calendar-modal');
             renderCalendar();
@@ -576,14 +660,12 @@
                 grid.appendChild(dayDiv);
             }
             
-            // 쿠폰 개수 렌더링 업데이트
             document.getElementById('cnt-dish').innerText = coupons.dish + '개';
             document.getElementById('cnt-laundry').innerText = coupons.laundry + '개';
             document.getElementById('cnt-clean').innerText = coupons.clean + '개';
             document.getElementById('cnt-massage').innerText = coupons.massage + '개';
         }
 
-        // --- Friction Tab Logic ---
         function switchFrictionTab(tab) {
             currentFrictionTab = tab;
             const tabOffice = document.getElementById('tab-office');
@@ -680,7 +762,6 @@
             saveState();
         }
 
-        // --- Penalty/Reward (Law 4) Modal ---
         function openPRModal(type) {
             currentPRType = type;
             const modal = document.getElementById('pr-modal');
@@ -696,14 +777,14 @@
                 desc.innerText = '담배를 피웠을 때 스스로에게 줄 고통(벌금 등)을 적어보세요.';
                 btn.className = 'bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-700 transition';
                 input.className = 'flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500';
-                couponSec.classList.remove('hidden'); // 패널티일때만 상품권 발행 보이기
+                couponSec.classList.remove('hidden'); 
             } else {
                 title.innerText = '🎁 금연 시 보상';
                 title.className = 'text-lg font-bold mb-1 text-yellow-600';
                 desc.innerText = '목표 달성 시 스스로에게 줄 선물을 적어보세요.';
                 btn.className = 'bg-yellow-500 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-yellow-600 transition';
                 input.className = 'flex-1 border border-slate-300 rounded-xl px-4 py-2 text-base focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500';
-                couponSec.classList.add('hidden'); // 보상일때는 상품권 숨기기
+                couponSec.classList.add('hidden'); 
             }
             
             renderPRList();
@@ -768,6 +849,7 @@
                 prData[currentPRType].push({ text: val, checked: false });
                 input.value = '';
                 renderPRList();
+                checkLaw4Status(); 
                 saveState();
             }
         }
@@ -775,12 +857,14 @@
         function togglePR(index) {
             prData[currentPRType][index].checked = !prData[currentPRType][index].checked;
             renderPRList();
+            checkLaw4Status(); 
             saveState();
         }
 
         function deletePR(index) {
             prData[currentPRType].splice(index, 1);
             renderPRList();
+            checkLaw4Status(); 
             saveState();
         }
 
@@ -833,11 +917,21 @@
             todayChecked = false;
             streakDisplay.innerText = streak;
 
+            triggerData.forEach(t => t.checked = false);
+            pcData.pros.forEach(p => p.checked = false);
+            pcData.cons.forEach(c => c.checked = false);
+            prData.penalty.forEach(p => p.checked = false);
+            prData.reward.forEach(r => r.checked = false);
+            
             checkboxes.forEach(cb => {
                 cb.checked = false;
                 cb.disabled = false; 
             });
             
+            checkLaw1Status();
+            checkLaw2Status();
+            checkLaw4Status();
+
             successMessage.classList.add('hidden');
             checkinBtn.classList.remove('bg-green-500', 'cursor-default');
             updateButtonState();
@@ -866,7 +960,7 @@
             modal.classList.add('hidden');
         }
 
-        // --- Pros/Cons Modal Functions ---
+        // --- Pros/Cons Modal ---
         function openProsConsModal(type) {
             currentPCType = type;
             const modal = document.getElementById('pros-cons-modal');
@@ -897,14 +991,15 @@
             }
             pcData[currentPCType].forEach((item, index) => {
                 const li = document.createElement('li');
-                li.className = 'flex items-center bg-slate-50 p-2 rounded-lg border border-slate-100 shadow-sm gap-2';
+                li.className = `flex items-center gap-2 p-2 rounded-lg border transition ${item.checked ? 'bg-slate-50 border-slate-100' : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'}`;
                 li.innerHTML = `
                     <div class="flex flex-col items-center justify-center shrink-0">
-                        <button onclick="movePC(${index}, -1)" class="p-0.5 text-slate-400 hover:text-blue-500 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === 0 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg></button>
-                        <button onclick="movePC(${index}, 1)" class="p-0.5 text-slate-400 hover:text-blue-500 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === pcData[currentPCType].length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
+                        <button onclick="movePC(${index}, -1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === 0 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg></button>
+                        <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="togglePC(${index})" class="my-0.5 w-5 h-5 rounded border-slate-300 accent-slate-800 cursor-pointer">
+                        <button onclick="movePC(${index}, 1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === pcData[currentPCType].length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
                     </div>
-                    <span class="flex-1 cursor-pointer hover:bg-slate-200 px-1 py-1 rounded transition break-all text-sm" onclick="editPC(${index})" id="pc-text-${index}" title="클릭하여 수정">${item}</span> 
-                    <button onclick="deletePC(${index})" class="p-2 text-slate-400 hover:text-red-500 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>`;
+                    <span class="flex-1 cursor-pointer hover:bg-slate-100 px-1 py-1 rounded transition break-all text-sm ${item.checked ? 'line-through text-slate-400' : 'text-slate-700'}" onclick="editPC(${index})" id="pc-text-${index}" title="클릭하여 수정">${item.text}</span> 
+                    <button onclick="deletePC(${index})" class="p-2 text-slate-300 hover:text-red-500 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>`;
                 list.appendChild(li);
             });
         }
@@ -921,8 +1016,8 @@
 
         function editPC(index) {
             const span = document.getElementById(`pc-text-${index}`);
-            const currentText = pcData[currentPCType][index];
-            span.outerHTML = `<input type="text" id="pc-edit-${index}" value="${currentText}" class="flex-1 border border-blue-400 rounded px-2 py-1 text-base focus:outline-none focus:ring-1 focus:ring-blue-400" onblur="savePC(${index})" onkeydown="if(event.key === 'Enter') savePC(${index})">`;
+            const currentText = pcData[currentPCType][index].text;
+            span.outerHTML = `<input type="text" id="pc-edit-${index}" value="${currentText}" class="flex-1 border border-slate-400 rounded px-2 py-1 text-base focus:outline-none focus:ring-1 focus:ring-slate-400" onblur="savePC(${index})" onkeydown="if(event.key === 'Enter') savePC(${index})">`;
             document.getElementById(`pc-edit-${index}`).focus();
         }
 
@@ -930,7 +1025,7 @@
             const input = document.getElementById(`pc-edit-${index}`);
             if(input) {
                 const val = input.value.trim();
-                if(val) pcData[currentPCType][index] = val;
+                if(val) pcData[currentPCType][index].text = val;
                 renderPCList();
                 saveState();
             }
@@ -940,16 +1035,25 @@
             const input = document.getElementById('pc-input');
             const val = input.value.trim();
             if(val) {
-                pcData[currentPCType].push(val);
+                pcData[currentPCType].push({ text: val, checked: false });
                 input.value = '';
                 renderPCList();
+                checkLaw2Status();
                 saveState();
             }
+        }
+
+        function togglePC(index) {
+            pcData[currentPCType][index].checked = !pcData[currentPCType][index].checked;
+            renderPCList();
+            checkLaw2Status();
+            saveState();
         }
 
         function deletePC(index) {
             pcData[currentPCType].splice(index, 1);
             renderPCList();
+            checkLaw2Status();
             saveState();
         }
 
@@ -1036,6 +1140,7 @@
                 triggerData.push({ text: val, commitment: '이행장치 입력 (클릭하여 수정)', checked: false });
                 input.value = '';
                 renderTriggerList();
+                checkLaw1Status(); 
                 saveState();
             }
         }
@@ -1043,12 +1148,14 @@
         function toggleTrigger(index) {
             triggerData[index].checked = !triggerData[index].checked;
             renderTriggerList();
+            checkLaw1Status(); 
             saveState();
         }
 
         function deleteTrigger(index) {
             triggerData.splice(index, 1);
             renderTriggerList();
+            checkLaw1Status(); 
             saveState();
         }
 
