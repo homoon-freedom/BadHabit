@@ -965,7 +965,7 @@
                         <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="togglePR(${index})" class="my-0.5 w-5 h-5 rounded border-slate-300 cursor-pointer ${currentPRType === 'penalty' ? 'accent-red-500' : 'accent-yellow-500'}">
                         <button onclick="movePR(${index}, 1)" class="p-0.5 text-slate-400 hover:text-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed" ${index === prData[currentPRType].length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
                     </div>
-                    <span class="flex-1 cursor-pointer hover:bg-slate-100 px-1 py-1 rounded transition break-all text-sm ${item.checked ? 'line-through text-slate-400' : 'text-slate-700'}" onclick="editPR(${index})" id="pr-text-${index}" title="클릭하여 수정">${item.text}</span>
+                    <span class="flex-1 cursor-pointer hover:bg-slate-100 px-1 py-1 rounded transition break-all text-sm ${item.checked ? 'text-slate-500 font-medium' : 'text-slate-700'}" onclick="editPR(${index})" id="pr-text-${index}" title="클릭하여 수정">${item.text}</span>
                     <button onclick="deletePR(${index})" class="p-2 text-slate-300 hover:text-red-500 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
                 `;
                 list.appendChild(li);
