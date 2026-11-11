@@ -155,10 +155,10 @@
         </div>
     </div>
 
-    <!-- Calendar Modal -->
-<!-- Calendar Modal -->
-<div id="calendar-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-0 sm:px-4 sm:py-6">
-    <div class="bg-white rounded-none sm:rounded-2xl p-4 sm:p-6 w-full h-full sm:h-[90vh] sm:max-w-sm sm:max-h-[850px] shadow-2xl transform transition-transform duration-300 flex flex-col">            <div class="flex items-center justify-between mb-4 shrink-0">
+    <!-- Calendar Modal (화면 꽉 차게 수정된 버전) -->
+    <div id="calendar-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-0 sm:px-4 sm:py-6">
+        <div class="bg-white rounded-none sm:rounded-2xl p-4 sm:p-6 w-full h-full sm:h-[90vh] sm:max-w-sm sm:max-h-[850px] shadow-2xl transform transition-transform duration-300 flex flex-col">
+            <div class="flex items-center justify-between mb-4 shrink-0">
                 <button onclick="changeMonth(-1)" class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition">&lt;</button>
                 <h3 id="calendar-title" class="text-lg font-bold text-slate-800">2026년 10월</h3>
                 <button onclick="changeMonth(1)" class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition">&gt;</button>
@@ -180,11 +180,13 @@
                 </div>
 
                 <!-- 타임라인 탭 컨텐츠 -->
-                <div id="calendar-tab-timeline" class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex-1">
+                <div id="calendar-tab-timeline" class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex-1 flex flex-col">
                     <div class="flex items-center justify-between mb-2">
                         <h4 id="selected-date-title" class="text-sm font-bold text-slate-700">📅 당일 타임라인</h4>
+                        <!-- 타임라인 바로 옆에 흡연 추가 (+) 버튼 -->
+                        <button onclick="addSmokeRecordFromCalendar()" class="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 w-7 h-7 rounded-lg font-black text-sm flex items-center justify-center transition shadow-sm" title="현재 선택된 날짜에 흡연 기록 추가">+</button>
                     </div>
-                    <div id="smoke-timeline-container">
+                    <div id="smoke-timeline-container" class="flex-1">
                         <div id="smoke-timeline-list" class="space-y-1.5 text-xs text-slate-600">
                             <p class="text-slate-400 text-center py-2">날짜를 선택하면 기록이 표시됩니다.</p>
                         </div>
@@ -643,6 +645,28 @@
                 btn.classList.add('scale-90');
                 setTimeout(() => btn.classList.remove('scale-90'), 150);
             }
+        }
+
+        // 달력 모달의 타임라인 영역 내 [+] 버튼 클릭 시 실행되는 함수
+        function addSmokeRecordFromCalendar() {
+            if (!selectedDateKey) {
+                alert('날짜를 먼저 선택해주세요.');
+                return;
+            }
+            if (!smokeRecords[selectedDateKey]) {
+                smokeRecords[selectedDateKey] = [];
+            }
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}`;
+
+            smokeRecords[selectedDateKey].push(timeString);
+            
+            saveState();
+            updateSmokeCountUI();
+            renderCalendar();
+            renderTimeline(selectedDateKey);
         }
 
         function deleteSmokeRecord(dateKey, index) {
