@@ -205,9 +205,8 @@
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
                     <div class="flex items-center justify-between mb-2">
                         <h4 id="selected-date-title" class="text-sm font-normal text-slate-700">📅 당일 타임라인</h4>
-                        <button onclick="toggleTimelineVisibility()" id="timeline-toggle-btn" class="text-xs bg-slate-200 text-slate-700 px-2.5 py-1 rounded-md font-semibold hover:bg-slate-300 transition">보이기</button>
                     </div>
-                    <div id="smoke-timeline-container" class="hidden">
+                    <div id="smoke-timeline-container">
                         <div id="smoke-timeline-list" class="space-y-1.5 text-xs text-slate-600 max-h-36 overflow-y-auto pr-1">
                             <p class="text-slate-400 text-center py-2">날짜를 선택하면 기록이 표시됩니다.</p>
                         </div>
@@ -644,18 +643,6 @@
                 coupons[type]--;
                 saveState();
                 renderCalendar(); 
-            }
-        }
-
-        function toggleTimelineVisibility() {
-            const container = document.getElementById('smoke-timeline-container');
-            const btn = document.getElementById('timeline-toggle-btn');
-            if (container.classList.contains('hidden')) {
-                container.classList.remove('hidden');
-                btn.innerText = '숨기기';
-            } else {
-                container.classList.add('hidden');
-                btn.innerText = '보이기';
             }
         }
 
