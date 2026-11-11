@@ -171,7 +171,6 @@
                         <span class="text-red-500">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="text-blue-500">토</span>
                     </div>
                     <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
-                    <p class="text-center text-xs text-slate-400 mt-2">달력의 날짜를 클릭하여 해당 일자의 타임라인을 확인하세요.</p>
                 </div>
 
                 <!-- 달력 하단 탭 버튼 -->
@@ -185,7 +184,6 @@
                     <div class="flex items-center justify-between mb-2">
                         <h4 id="selected-date-title" class="text-sm font-bold text-slate-700">📅 당일 타임라인</h4>
                     </div>
-                    <!-- 스크롤을 제한하던 max-h-36 overflow-y-auto 클래스 제거하여 모두 펼쳐보이게 함 -->
                     <div id="smoke-timeline-container">
                         <div id="smoke-timeline-list" class="space-y-1.5 text-xs text-slate-600">
                             <p class="text-slate-400 text-center py-2">날짜를 선택하면 기록이 표시됩니다.</p>
@@ -195,7 +193,6 @@
 
                 <!-- 누적 상품권 탭 컨텐츠 -->
                 <div id="calendar-tab-coupons" class="bg-slate-50 p-4 rounded-xl border border-slate-100 hidden flex-1">
-                    <h4 class="text-sm font-bold text-slate-700 mb-3">🎟️ 벌칙 상품권</h4>
                     <div class="flex flex-col gap-2">
                         <div class="flex items-center justify-between bg-white p-1.5 rounded-lg border border-slate-200 shadow-sm">
                             <span class="text-sm font-normal text-slate-600">🍽️ 요리하기</span>
@@ -648,7 +645,6 @@
             }
         }
 
-        // --- 삭제 기능 추가 ---
         function deleteSmokeRecord(dateKey, index) {
             if (confirm('해당 흡연 기록을 삭제하시겠습니까?')) {
                 smokeRecords[dateKey].splice(index, 1);
@@ -677,7 +673,6 @@
             }
         }
 
-        // --- 캘린더 모달 탭 변경 함수 ---
         function switchCalendarTab(tab) {
             currentCalendarTab = tab;
             const tabTimeline = document.getElementById('tab-timeline');
@@ -789,7 +784,6 @@
                         <span class="font-bold text-slate-700">${index + 1}개피</span>
                         ${medalText}
                     </div>
-                    <!-- 간격/시간 우측에 삭제 버튼 추가 -->
                     <div class="flex items-center gap-1.5">
                         <div class="flex items-center gap-1">
                             <span class="text-blue-500 font-semibold">${intervalText}</span>
@@ -831,7 +825,7 @@
                 dayDiv.onclick = () => {
                     selectedDateKey = dateKey;
                     renderTimeline(dateKey);
-                    switchCalendarTab('timeline'); // 달력 날짜 클릭 시 타임라인 탭으로 자동 이동
+                    switchCalendarTab('timeline');
                 };
 
                 dayDiv.ondblclick = () => {
@@ -868,7 +862,6 @@
             document.getElementById('cnt-massage').innerText = coupons.massage + '개';
         }
 
-        // --- 나만의 규칙 (Friction Modal) 모달 ---
         function switchFrictionTab(tab) {
             currentFrictionTab = tab;
             const tabOffice = document.getElementById('tab-office');
@@ -1188,7 +1181,6 @@
             modal.classList.add('hidden');
         }
 
-        // --- Pros/Cons Modal 로직 ---
         function openProsConsModal(type) {
             currentPCType = type;
             const modal = document.getElementById('pros-cons-modal');
@@ -1314,7 +1306,6 @@
             saveState();
         }
 
-        // --- Trigger (Law 1) Modal 로직 ---
         function openTriggerModal() {
             const modal = document.getElementById('trigger-modal');
             renderTriggerList();
