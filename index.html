@@ -169,6 +169,20 @@
                 </div>
                 <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
                 <p class="text-center text-xs text-slate-400">달력의 날짜를 클릭하여 해당 일자의 타임라인을 확인하세요.</p>
+                
+                <!-- 타임라인 영역 (위로 이동됨) -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 id="selected-date-title" class="text-sm font-normal text-slate-700">📅 당일 타임라인</h4>
+                    </div>
+                    <div id="smoke-timeline-container">
+                        <div id="smoke-timeline-list" class="space-y-1.5 text-xs text-slate-600 max-h-36 overflow-y-auto pr-1">
+                            <p class="text-slate-400 text-center py-2">날짜를 선택하면 기록이 표시됩니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 누적 상품권 영역 (아래로 이동됨) -->
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
                     <h4 class="text-sm font-normal text-slate-700 mb-3">🎟️ 누적된 벌칙 상품권</h4>
                     <div class="flex flex-col gap-2">
@@ -202,16 +216,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                    <div class="flex items-center justify-between mb-2">
-                        <h4 id="selected-date-title" class="text-sm font-normal text-slate-700">📅 당일 타임라인</h4>
-                    </div>
-                    <div id="smoke-timeline-container">
-                        <div id="smoke-timeline-list" class="space-y-1.5 text-xs text-slate-600 max-h-36 overflow-y-auto pr-1">
-                            <p class="text-slate-400 text-center py-2">날짜를 선택하면 기록이 표시됩니다.</p>
-                        </div>
-                    </div>
-                </div>
+
             </div>
             <button onclick="closeModal('calendar-modal')" class="w-full py-3 mt-4 bg-slate-100 text-slate-800 rounded-xl font-bold hover:bg-slate-200 transition shrink-0">
                 닫기
