@@ -163,28 +163,39 @@
                 <h3 id="calendar-title" class="text-lg font-bold text-slate-800">2026년 10월</h3>
                 <button onclick="changeMonth(1)" class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition">&gt;</button>
             </div>
-            <div class="flex-1 overflow-y-auto pr-1 pb-2 space-y-4">
-                <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-400">
-                    <span class="text-red-500">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="text-blue-500">토</span>
-                </div>
-                <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
-                <p class="text-center text-xs text-slate-400">달력의 날짜를 클릭하여 해당 일자의 타임라인을 확인하세요.</p>
-                
-                <!-- 타임라인 영역 (위로 이동됨) -->
-                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                    <div class="flex items-center justify-between mb-2">
-                        <h4 id="selected-date-title" class="text-sm font-normal text-slate-700">📅 당일 타임라인</h4>
+            
+            <div class="flex-1 overflow-y-auto pr-1 pb-2 flex flex-col space-y-4">
+                <!-- 달력 그리드 영역 -->
+                <div>
+                    <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-400 mb-1">
+                        <span class="text-red-500">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="text-blue-500">토</span>
                     </div>
+                    <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
+                    <p class="text-center text-xs text-slate-400 mt-2">달력의 날짜를 클릭하여 해당 일자의 타임라인을 확인하세요.</p>
+                </div>
+
+                <!-- 달력 하단 탭 버튼 -->
+                <div class="flex bg-slate-100 p-1 rounded-xl shrink-0 mt-2 mb-1">
+                    <button onclick="switchCalendarTab('timeline')" id="tab-timeline" class="flex-1 py-1.5 text-xs font-bold rounded-lg transition bg-white shadow-sm text-blue-600">📅 타임라인</button>
+                    <button onclick="switchCalendarTab('coupons')" id="tab-coupons" class="flex-1 py-1.5 text-xs font-bold rounded-lg transition text-slate-500 hover:bg-slate-200">🎟️ 누적 상품권</button>
+                </div>
+
+                <!-- 타임라인 탭 컨텐츠 -->
+                <div id="calendar-tab-timeline" class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 id="selected-date-title" class="text-sm font-bold text-slate-700">📅 당일 타임라인</h4>
+                    </div>
+                    <!-- 스크롤을 제한하던 max-h-36 overflow-y-auto 클래스 제거하여 모두 펼쳐보이게 함 -->
                     <div id="smoke-timeline-container">
-                        <div id="smoke-timeline-list" class="space-y-1.5 text-xs text-slate-600 max-h-36 overflow-y-auto pr-1">
+                        <div id="smoke-timeline-list" class="space-y-1.5 text-xs text-slate-600">
                             <p class="text-slate-400 text-center py-2">날짜를 선택하면 기록이 표시됩니다.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- 누적 상품권 영역 (아래로 이동됨) -->
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <h4 class="text-sm font-normal text-slate-700 mb-3">🎟️ 누적된 벌칙 상품권</h4>
+                <!-- 누적 상품권 탭 컨텐츠 -->
+                <div id="calendar-tab-coupons" class="bg-slate-50 p-4 rounded-xl border border-slate-100 hidden flex-1">
+                    <h4 class="text-sm font-bold text-slate-700 mb-3">🎟️ 벌칙 상품권</h4>
                     <div class="flex flex-col gap-2">
                         <div class="flex items-center justify-between bg-white p-1.5 rounded-lg border border-slate-200 shadow-sm">
                             <span class="text-sm font-normal text-slate-600">🍽️ 요리하기</span>
@@ -340,6 +351,7 @@
         let currentPCType = 'pros';
         let currentPRType = 'penalty';
         let currentFrictionTab = 'office'; 
+        let currentCalendarTab = 'timeline';
 
         let calendarYear = new Date().getFullYear();
         let calendarMonth = new Date().getMonth();
@@ -636,6 +648,20 @@
             }
         }
 
+        // --- 삭제 기능 추가 ---
+        function deleteSmokeRecord(dateKey, index) {
+            if (confirm('해당 흡연 기록을 삭제하시겠습니까?')) {
+                smokeRecords[dateKey].splice(index, 1);
+                if (smokeRecords[dateKey].length === 0) {
+                    delete smokeRecords[dateKey];
+                }
+                saveState();
+                updateSmokeCountUI();
+                renderCalendar();
+                renderTimeline(dateKey);
+            }
+        }
+
         function issueCoupon() {
             const type = document.getElementById('coupon-select').value;
             coupons[type]++;
@@ -651,9 +677,31 @@
             }
         }
 
+        // --- 캘린더 모달 탭 변경 함수 ---
+        function switchCalendarTab(tab) {
+            currentCalendarTab = tab;
+            const tabTimeline = document.getElementById('tab-timeline');
+            const tabCoupons = document.getElementById('tab-coupons');
+            const contentTimeline = document.getElementById('calendar-tab-timeline');
+            const contentCoupons = document.getElementById('calendar-tab-coupons');
+
+            if (tab === 'timeline') {
+                tabTimeline.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition bg-white shadow-sm text-blue-600";
+                tabCoupons.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition text-slate-500 hover:bg-slate-200";
+                contentTimeline.classList.remove('hidden');
+                contentCoupons.classList.add('hidden');
+            } else {
+                tabCoupons.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition bg-white shadow-sm text-blue-600";
+                tabTimeline.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition text-slate-500 hover:bg-slate-200";
+                contentCoupons.classList.remove('hidden');
+                contentTimeline.classList.add('hidden');
+            }
+        }
+
         function openCalendarModal() {
             const modal = document.getElementById('calendar-modal');
             renderCalendar();
+            switchCalendarTab('timeline');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             
@@ -737,14 +785,19 @@
                 const div = document.createElement('div');
                 div.className = "flex items-center justify-between bg-white py-1.5 px-3 rounded-lg border border-slate-200 shadow-sm text-xs";
                 div.innerHTML = `
-                    <div class="flex items-center gap-1.5">
+                    <div class="flex items-center gap-1.5 shrink-0">
                         <span class="font-bold text-slate-700">${index + 1}개피</span>
                         ${medalText}
                     </div>
-                    <!-- 이 부분이 요청하신 순서대로 수정되었습니다: (간격) 시간 -->
-                    <div class="flex items-center gap-1">
-                        <span class="text-blue-500 font-semibold">${intervalText}</span>
-                        <span class="text-slate-500">${time}</span>
+                    <!-- 간격/시간 우측에 삭제 버튼 추가 -->
+                    <div class="flex items-center gap-1.5">
+                        <div class="flex items-center gap-1">
+                            <span class="text-blue-500 font-semibold">${intervalText}</span>
+                            <span class="text-slate-500">${time}</span>
+                        </div>
+                        <button onclick="deleteSmokeRecord('${dateKey}', ${index})" class="text-slate-300 hover:text-red-500 transition p-0.5" title="기록 삭제">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
                     </div>
                 `;
                 timelineList.appendChild(div);
@@ -778,6 +831,7 @@
                 dayDiv.onclick = () => {
                     selectedDateKey = dateKey;
                     renderTimeline(dateKey);
+                    switchCalendarTab('timeline'); // 달력 날짜 클릭 시 타임라인 탭으로 자동 이동
                 };
 
                 dayDiv.ondblclick = () => {
@@ -794,6 +848,7 @@
                             updateSmokeCountUI();
                             renderCalendar();
                             renderTimeline(dateKey);
+                            switchCalendarTab('timeline');
                         } else if (input.trim() !== '') {
                             alert('올바른 숫자를 입력해주세요.');
                         }
